@@ -1,0 +1,9 @@
+=== MENU === TASK
+1. ✅ Login -> Implement Login
+2. home -> priority higlight daily daily filter by priority
+3. home -> search
+4. List -> all list menu descending filter by DATE
+5. Create Task -> Only in role depthead
+6. Rank -> get list all Rank
+7. Chart -> get list Chart
+8. Profile -> info profil
