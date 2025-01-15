@@ -1,10 +1,12 @@
+import 'package:daytaskapp/data/models/priority_model.dart';
 import 'package:daytaskapp/feature/home/bloc/priority_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PriorityView extends StatefulWidget {
-  const PriorityView({super.key});
+  final Function(String?)? onPrioritySelected;
+  const PriorityView({super.key, this.onPrioritySelected});
 
   @override
   State<PriorityView> createState() => _PriorityViewState();
@@ -26,6 +28,27 @@ class _PriorityViewState extends State<PriorityView> {
 
   @override
   Widget build(BuildContext context) {
+  List<PriorityData> priorities = [
+    PriorityData(
+      idPriority: 1,
+      priorityName: 'asign',
+      createdAt: DateTime.now(), 
+      updatedAt: DateTime.now(), 
+    ),
+    PriorityData(
+      idPriority: 2,
+      priorityName: 'in-progress',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    ),
+    PriorityData(
+      idPriority: 3,
+      priorityName: 'done',
+      createdAt: DateTime.now(),
+      updatedAt: null, 
+    ),
+  ];
+
     return Column(
       children: [
         BlocBuilder<PriorityBloc, PriorityState>(
@@ -40,18 +63,19 @@ class _PriorityViewState extends State<PriorityView> {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: state.priorities.map((priority) {
+                  children: priorities.map((priority) {
                     return Row(
                       children: [
                         SizedBox(
                           width: 115, // Atur lebar tombol
                           child: TextButton(
                             onPressed: () {
-                              // Aksi tombol ketika ditekan
-                              print("Priority Selected: ${priority.priorityName}");
                               setState(() {
                                 selectedPriorityId = priority.idPriority;
                               });
+                              if (widget.onPrioritySelected != null) {
+                                widget.onPrioritySelected!(priority.priorityName);
+                              }
                             },
                             style: TextButton.styleFrom(
                               backgroundColor: _isPrioritySelected(priority.idPriority)

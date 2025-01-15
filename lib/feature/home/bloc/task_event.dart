@@ -8,7 +8,12 @@ abstract class TaskEvent extends Equatable {
 }
 
 class TaskFetchEvent extends TaskEvent {
-  const TaskFetchEvent();
+  final String? priority;
+  final String? taskProgress;
+  final String? filterDate;
+  final String? keyword;
+
+  const TaskFetchEvent({this.priority, this.taskProgress, this.filterDate, this.keyword});
 
   @override
   List<Object> get props => [];

@@ -23,6 +23,7 @@ class LoginRepoMockImpl implements LoginRepo {
           username: 'testuser',
           email: 'admin@gmail.com',
           phone: '1234567890',
+          role_id: 1,
           avatar: '-',
         ),
         token: 'mock-token',

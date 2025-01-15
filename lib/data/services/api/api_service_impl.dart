@@ -85,4 +85,28 @@ class ApiServiceImpl extends ApiService {
       return ApiResponse.error(e.toString());
     }
   }
+
+  @override
+  Future<ApiResponse> put({
+    required String path,
+    Map<String, dynamic>? query,
+    dynamic data,
+  }) async {
+    try {
+      final response = await _dio.put(
+        path,
+        queryParameters: query,
+        data: data,
+      );
+  
+      return ApiResponse.fromDioResponse(
+        response,
+      );
+    } on DioException catch (e) {
+      return ApiResponse.error(e.toString());
+    } catch (e) {
+      return ApiResponse.error(e.toString());
+    }
+  }
+
 }

@@ -25,6 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (loginData.status) {
           saveToken(loginData.token);
           saveUserId(loginData.user.user_id);
+          saveRoleId(loginData.user.role_id);
           emit(LoginSuccessState(loginData));
         } else {
           emit(LoginErrorState("Login failed: ${loginData.message}")); // Jika login gagal

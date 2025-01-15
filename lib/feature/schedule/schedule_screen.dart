@@ -3,41 +3,33 @@ import 'package:daytaskapp/feature/schedule/view/task_list_view.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
-class ScheduleScreen extends StatelessWidget {
+class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> data = [
-      {
-        'title': 'The Logo Process',
-        'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'progress': 'In-Progress',
-        'date1': '12 Jan 2023',
-        'date2': '20 Mar 2023',
-      },
-      {
-        'title': 'Brand Identity',
-        'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'progress': 'Completed',
-        'date1': '15 Feb 2023',
-        'date2': '10 Apr 2023',
-      },
-      // You may want to avoid duplicates if these are identical entries
-      {
-        'title': 'Another Task',
-        'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'progress': 'Completed',
-        'date1': '15 Feb 2023',
-        'date2': '10 Apr 2023',
-      },
-    ];
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
+}
 
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  String? selectedPriority;
+  String? selectedDatetime;
+
+  void _onPrioritySelected(String? priority) {
+    setState(() {
+      selectedPriority = priority;
+    });
+  }
+
+  void _onDatetimeSelected(String? datetime) {
+    setState(() {
+      selectedDatetime = datetime;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         color: Colors.white,
@@ -48,6 +40,9 @@ class ScheduleScreen extends StatelessWidget {
             EasyDateTimeLine(
               initialDate: DateTime.now(),
               onDateChange: (selectedDate) {
+                final date = DateFormat('yyyy-MM-dd').format(selectedDate!);
+                _onDatetimeSelected(date);
+                print("DATE CHANGGES ${date}");
                 // Handle date change
               },
               headerProps: const EasyHeaderProps(
@@ -84,15 +79,21 @@ class ScheduleScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: PriorityView(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: PriorityView(
+                onPrioritySelected: _onPrioritySelected,
+              ),
             ),
-            const Flexible(
+            Flexible(
               flex: 1,
               child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: TaskListView()),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TaskListView(
+                  priority: selectedPriority,
+                  datetime: selectedDatetime
+                ),
+              ),
             ),
           ],
         ),

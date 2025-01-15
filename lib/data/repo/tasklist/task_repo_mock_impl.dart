@@ -1,12 +1,18 @@
 import 'package:daytaskapp/data/models/task_model.dart';
+import 'package:daytaskapp/data/models/update_task_model.dart';
 import 'package:daytaskapp/data/repo/tasklist/task_repo.dart';
 
 class TaskRepoMockImpl implements TaskRepo {
+  
   @override
-  Future<TaskResponse> fetchTasks() async {
+  Future<TaskResponse> fetchTasks({
+    String? priority, // Parameter opsional untuk prioritas
+    String? taskProgress, // Parameter opsional untuk progress tugas
+    String? filterDate,
+    String? keyword,
+  }) async {
     // Simulasi data mock untuk testing
     await Future.delayed(Duration(seconds: 2)); // Simulasi loading delay
-
     return TaskResponse(
       status: true,
       message: 'success',
@@ -50,4 +56,37 @@ class TaskRepoMockImpl implements TaskRepo {
       ],
     );
   }
+
+  // @override
+  // Future<UpdateTaskResponse> updateTask({
+  //   required int idTask,
+  //   required int idPoint,
+  //   required String taskName,
+  //   required String taskProgres,
+  //   required String taskDate,
+  //   required String taskDueDate,
+  //   required String taskDocs,
+  //   required int idPic,
+  //   required int idSvp,
+  // }) async {
+  //   // Simulasi loading delay
+  //   await Future.delayed(Duration(seconds: 2));
+
+  //   return UpdateTaskResponse(
+  //     status: true,
+  //     message: "Success",
+  //     data: [
+  //       TaskData(
+  //         idPoint: idPoint,
+  //         taskName: taskName,
+  //         taskProgress: taskProgres,
+  //         taskDate: taskDate,  // Jika menggunakan DateTime, konversi dengan toIso8601String() atau format yang sesuai
+  //         taskDueDate: taskDueDate, // Sama seperti taskDate
+  //         taskDocs: taskDocs,
+  //         idPic: idPic,
+  //         idSvp: idSvp,
+  //       ),
+  //     ],
+  //   );
+  // }
 }

@@ -1,4 +1,6 @@
 import 'package:daytaskapp/data/repo/authenticate/login_repo_impl.dart';
+import 'package:daytaskapp/data/repo/rank/rank_repo.dart';
+import 'package:daytaskapp/data/repo/rank/rank_repo_impl.dart';
 import 'package:daytaskapp/data/repo/tasklist/priority_repo.dart';
 import 'package:daytaskapp/data/repo/tasklist/priority_repo_impl.dart';
 import 'package:daytaskapp/data/repo/tasklist/task_repo.dart';
@@ -20,6 +22,7 @@ void initRepo() {
   getIt.registerLazySingleton<LoginRepo>(() => LoginRepoImpl(apiService: getIt.get<ApiService>()));
   getIt.registerLazySingleton<PriorityRepo>(() => PriorityRepoImpl(apiService: getIt.get<ApiService>()));
   getIt.registerLazySingleton<TaskRepo>(() => TaskRepoImpl(apiService: getIt.get<ApiService>()));
+  getIt.registerLazySingleton<RankRepo>(() => RankRepoImpl(apiService: getIt.get<ApiService>()));
 
   // Jika ingin menggunakan mock untuk login, Anda bisa mengganti implementasi seperti ini:
   // getIt.registerLazySingleton<LoginRepo>(() => LoginRepoMockImpl());

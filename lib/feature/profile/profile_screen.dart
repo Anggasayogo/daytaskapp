@@ -93,7 +93,9 @@ class ProfileScreen extends StatelessWidget {
                               SizedBox(
                                 width: 40, // Atur lebar sesuai kebutuhan
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.push(RoutePath.report);
+                                  },
                                   child:
                                       const Icon(Icons.chevron_right_outlined),
                                 ),

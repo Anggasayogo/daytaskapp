@@ -1,6 +1,9 @@
 import 'package:d_chart/d_chart.dart';
+import 'package:daytaskapp/feature/rank/bloc/rank_bloc.dart';
+import 'package:daytaskapp/feature/rank/view/rank_list_view.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RankScreen extends StatelessWidget {
   const RankScreen({super.key});
@@ -21,77 +24,37 @@ class RankScreen extends StatelessWidget {
             const SizedBox(height: 20),
             AspectRatio(
               aspectRatio: 13 / 9,
-              child: DChartBarO(
-                groupList: [
-                  OrdinalGroup(
-                    id: '1',
-                    data: [
-                      OrdinalData(domain: 'Angga', measure: 70),
-                      OrdinalData(domain: 'Kms Agil', measure: 50),
-                      OrdinalData(domain: 'Febri', measure: 30),
-                      OrdinalData(domain: 'Dani', measure: 25),
-                    ],
-                    color: primary
-                  ),
-                ],
+              child: BlocBuilder<RankBloc, RankState>(
+                builder: (context, state) {
+                  if (state is RankSuccessState) {
+                    final chartData = state.ranks.map((item) {
+                      return OrdinalData(
+                        domain: item.username, 
+                        measure: int.parse(item.totalPoint),
+                      );
+                    }).toList();
+
+                    return DChartBarO(
+                      groupList: [
+                        OrdinalGroup(
+                          id: '1',
+                          data: chartData,
+                          color: primary,
+                        ),
+                      ],
+                    );
+                  } else if (state is RankLoadingState) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (state is RankErrorState) {
+                    return Center(child: Text('Failed to load data'));
+                  }
+                  return Center(child: Text('No data available'));
+                },
               ),
             ),
+
             const SizedBox(height: 30),
-            Row(
-              children: [
-                Text('1', style: semibold12_5.copyWith(fontSize: 15)),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 45,
-                  height: 45,
-                  child: Image.asset('assets/images/ic_avatar2.png'),
-                ),
-                const SizedBox(width: 10),
-                Text('Angga Maulana', style: regular14.copyWith(fontSize: 15)),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                Text('2', style: semibold12_5.copyWith(fontSize: 15)),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 45,
-                  height: 45,
-                  child: Image.asset('assets/images/ic_avatar2.png'),
-                ),
-                const SizedBox(width: 10),
-                Text('Kms Agil Yudhoyono', style: regular14.copyWith(fontSize: 15)),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                Text('3', style: semibold12_5.copyWith(fontSize: 15)),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 45,
-                  height: 45,
-                  child: Image.asset('assets/images/ic_avatar2.png'),
-                ),
-                const SizedBox(width: 10),
-                Text('Febri Makarim', style: regular14.copyWith(fontSize: 15)),
-              ],
-            ),
-            const SizedBox(height: 15),
-            Row(
-              children: [
-                Text('4', style: semibold12_5.copyWith(fontSize: 15)),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 45,
-                  height: 45,
-                  child: Image.asset('assets/images/ic_avatar2.png'),
-                ),
-                const SizedBox(width: 10),
-                Text('Dani Tuak Hercules', style: regular14.copyWith(fontSize: 15)),
-              ],
-            ),
+            const RankListView(),
           ],
         ),
       ),

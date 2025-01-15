@@ -1,12 +1,16 @@
+import 'package:daytaskapp/app/route/routes/route_path.dart';
 import 'package:daytaskapp/feature/home/bloc/task_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class TaskListView extends StatefulWidget {
-  const TaskListView({super.key});
+  final String? priority;
+  final String? datetime;
+  const TaskListView({super.key, this.priority, this.datetime});
 
   @override
   State<TaskListView> createState() => _TaskListViewState();
@@ -17,7 +21,26 @@ class _TaskListViewState extends State<TaskListView> {
   void initState() {
     super.initState();
     // Memanggil TaskFetchEvent saat widget diinisialisasi
-    context.read<TaskBloc>().add(TaskFetchEvent());
+    context.read<TaskBloc>().add(const TaskFetchEvent(
+      priority: '',
+      taskProgress: '',
+      filterDate: '',
+      keyword: ''
+    ));
+  }
+
+  @override
+  void didUpdateWidget(covariant TaskListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Jika priority berubah, panggil ulang API
+    if (oldWidget.priority != widget.priority || oldWidget.datetime != widget.datetime) {
+      context.read<TaskBloc>().add(TaskFetchEvent(
+        priority: '',
+        taskProgress: widget.priority ?? '',
+        filterDate: widget.datetime ?? '',
+        keyword: ''
+      ));
+    }
   }
 
   @override
@@ -42,17 +65,15 @@ class _TaskListViewState extends State<TaskListView> {
               );
             }
 
-            // Handle success state
             if (state is TaskSuccessState) {
-              final tasks = state.tasks; // Ambil data task dari state
+              final tasks = state.tasks;
               return ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
-                  final task = tasks[index]; // Ambil setiap task
+                  final task = tasks[index]; 
                   return InkWell(
                     onTap: () {
-                      // Pindah ke task detail (Anda bisa menambahkan logika navigasi di sini)
-                      print("Task Selected: ${task.taskName}");
+                      context.push(RoutePath.taskDetail, extra: task.id.toString());
                     },
                     child: Card(
                       color: Colors.white,

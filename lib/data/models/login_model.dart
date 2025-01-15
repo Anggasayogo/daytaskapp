@@ -26,6 +26,7 @@ class UserModel {
   final String username;
   final String email;
   final String phone;
+  final int role_id;
   final String? avatar;
 
    UserModel({
@@ -33,6 +34,7 @@ class UserModel {
     required this.username,
     required this.email,
     required this.phone,
+    required this.role_id,
     this.avatar
   });
 
@@ -42,6 +44,7 @@ class UserModel {
       username: json['username'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
+      role_id: json['role_id'] ?? '',
       avatar: json['avatar'] ?? '',
     );
   }

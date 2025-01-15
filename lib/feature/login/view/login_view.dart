@@ -87,8 +87,7 @@ class _LoginViewState extends State<LoginView> {
             const SizedBox(height: 70),
             SizedBox(
               width: double.infinity, // Membuat tombol memanjang penuh
-              child:
-                  BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+              child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
                 bool isLoading = state is LoginLoadingState;
 
                 return TextButton(

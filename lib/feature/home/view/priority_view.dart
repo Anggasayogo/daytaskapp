@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PriorityView extends StatefulWidget {
-  const PriorityView({super.key});
+  final Function(String?)? onPrioritySelected;
+  const PriorityView({super.key, this.onPrioritySelected});
 
   @override
   State<PriorityView> createState() => _PriorityViewState();
@@ -17,7 +18,7 @@ class _PriorityViewState extends State<PriorityView> {
   void initState() {
     super.initState();
     // Memanggil event PriorityFetchEvent saat widget diinisialisasi
-    context.read<PriorityBloc>().add(PriorityFetchEvent());
+    context.read<PriorityBloc>().add(const PriorityFetchEvent());
   }
 
   bool _isPrioritySelected(int idPriority) {
@@ -52,6 +53,10 @@ class _PriorityViewState extends State<PriorityView> {
                               setState(() {
                                 selectedPriorityId = priority.idPriority;
                               });
+                              
+                              if (widget.onPrioritySelected != null) {
+                                widget.onPrioritySelected!(priority.priorityName);
+                              }
                             },
                             style: TextButton.styleFrom(
                               backgroundColor: _isPrioritySelected(priority.idPriority)

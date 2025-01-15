@@ -9,4 +9,5 @@ class RoutePath {
   static const String rank = '/rank';
   static const String profile = '/profile';
   static const String productDetails = 'product_details';
+  static const String report = '/report';
 }

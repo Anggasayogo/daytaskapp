@@ -1,11 +1,9 @@
 import 'package:daytaskapp/app/controller/navigation_cubit.dart';
-import 'package:daytaskapp/data/repo/authenticate/login_repo.dart';
-import 'package:daytaskapp/data/repo/repo.dart';
-import 'package:daytaskapp/feature/login/bloc/login_bloc.dart';
 import 'package:daytaskapp/feature/main_screen.dart';
 import 'package:daytaskapp/feature/postask/post_task_screen.dart';
 import 'package:daytaskapp/feature/profile/profile_screen.dart';
 import 'package:daytaskapp/feature/rank/rank_screen.dart';
+import 'package:daytaskapp/feature/report/report_screen.dart';
 import 'package:daytaskapp/feature/schedule/schedule_screen.dart';
 import 'package:daytaskapp/feature/taskdetail/task_detail_screen.dart';
 import 'package:flutter/widgets.dart';
@@ -103,7 +101,16 @@ final router = GoRouter(
     GoRoute(
       path: RoutePath.taskDetail,
       name: RoutePath.taskDetail,
-      builder: (context, state) => const TaskDetailScreen(),
+      builder: (context, state) {
+        // Ambil ID dari state.extra
+        final String taskId = state.extra as String;
+        return TaskDetailScreen(taskId: taskId);
+      },
+    ),
+    GoRoute(
+      path: RoutePath.report,
+      name: RoutePath.report,
+      builder: (context, state) => const ReportScreen(),
     ),
   ],
   errorBuilder: (context, state) => const NotFoundScreen(),

@@ -1,48 +1,46 @@
-import 'package:daytaskapp/app/route/routes/route_path.dart';
-import 'package:daytaskapp/feature/home/bloc/priority_bloc.dart';
+import 'package:daytaskapp/feature/home/bloc/task_bloc.dart';
 import 'package:daytaskapp/feature/home/view/priority_view.dart';
 import 'package:daytaskapp/feature/home/view/task_list_view.dart';
-import 'package:daytaskapp/feature/login/bloc/login_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 import 'bloc/categories_bloc.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> data = [
-      {
-        'title': 'The Logo Process',
-        'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'progress': 'In-Progress',
-        'date1': '12 Jan 2023',
-        'date2': '20 Mar 2023',
-      },
-      {
-        'title': 'Brand Identity',
-        'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'progress': 'Completed',
-        'date1': '15 Feb 2023',
-        'date2': '10 Apr 2023',
-      },
-      {
-        'title': 'Brand Identity',
-        'description':
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'progress': 'Completed',
-        'date1': '15 Feb 2023',
-        'date2': '10 Apr 2023',
-      },
-    ];
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  String? selectedPriority; 
+  String? keyword; 
+  // Controller untuk TextField
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Membersihkan controller saat widget dihapus
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearch() {
+    setState(() {
+      keyword = _searchController.text;
+    });
+  }
+
+  void _onPrioritySelected(String? param) {
+    setState(() {
+      selectedPriority = param;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider<CategoriesBloc>(
       create: (_) => CategoriesBloc()..add(const CategoriesFetchEvent()),
       child: Scaffold(
@@ -77,6 +75,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 TextField(
+                  controller: _searchController,
+                  onSubmitted: (value) => {_onSearch()},
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -103,9 +103,12 @@ class HomeScreen extends StatelessWidget {
                       semibold12_5.copyWith(fontSize: 14, color: Colors.black),
                 ),
                 const SizedBox(height: 15),
-                const PriorityView(),
+                PriorityView(onPrioritySelected: _onPrioritySelected), // Pass callback
                 const SizedBox(height: 15),
-                const TaskListView(),
+                TaskListView(
+                  priority: selectedPriority,
+                  keyword: keyword
+                ),
               ],
             ),
           ),
