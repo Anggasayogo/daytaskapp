@@ -1,5 +1,7 @@
 # Daytask App (Daily Task App)
 
+![Cover Daytask App](vendor/Cover.png)
+
 **Daytask App** adalah aplikasi penugasan kerja harian di **PT Visionet Data International** yang bertujuan memudahkan **PIC** dan **SVP** dalam melakukan tracking pekerjaan secara real-time.  
 Aplikasi ini dibangun menggunakan **Flutter** untuk mendukung pengelolaan tugas harian secara efisien dan terstruktur.  
 
