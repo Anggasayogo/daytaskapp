@@ -1,16 +1,46 @@
-# daytaskapp
+# Daytask App (Daily Task App)
 
-A new Flutter project.
+**Daytask App** adalah aplikasi penugasan kerja harian di **PT Visionet Data International** yang bertujuan memudahkan **PIC** dan **SVP** dalam melakukan tracking pekerjaan secara real-time.  
+Aplikasi ini dibangun menggunakan **Flutter** untuk mendukung pengelolaan tugas harian secara efisien dan terstruktur.  
 
-## Getting Started
+> **Catatan:** Project ini juga merupakan **tugas akhir** pada kampus **Universitas Muhammadiyah Banten**.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Fitur Utama
+- 📌 Penugasan kerja harian
+- 📅 Penjadwalan dan pengelolaan task
+- 📊 Tracking progres pekerjaan oleh PIC & SVP
+- 🔔 Notifikasi pengingat tugas
+- 🔍 Laporan status pekerjaan
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📋 Persyaratan Sistem
+Sebelum menginstal aplikasi, pastikan Anda sudah memiliki:
+- **Flutter SDK** minimal versi 3.x  
+  [Download Flutter](https://docs.flutter.dev/get-started/install)
+- **Dart SDK** (biasanya sudah termasuk di Flutter)
+- **Android Studio** atau **Visual Studio Code** (untuk development)
+- **Git** (untuk clone repository)
+- **Device**:
+  - Android: minimal Android 6.0 (API 23)
+  - iOS: minimal iOS 12
+
+---
+
+## 🚀 Cara Instalasi
+
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/username/daytask_app.git
+   cd daytask_app
+2. **Install dependency**
+   ```bash
+   flutter pub get
+3. **Jalankan aplikasi di device/emulator**
+   ```bash
+   flutter run
+4. **Build APK (opsional)**
+   ```bash
+   flutter build apk --release
