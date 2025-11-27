@@ -1,4 +1,5 @@
 import 'package:daytaskapp/data/models/login_model.dart';
+import 'package:daytaskapp/data/models/user_list_model.dart';
 import 'package:daytaskapp/data/repo/authenticate/login_repo.dart';
 import 'package:daytaskapp/data/services/api/api_service.dart';
 import 'package:daytaskapp/utils/exceptions/exceptions.dart';
@@ -29,6 +30,22 @@ class LoginRepoImpl implements LoginRepo {
 
       if (response.statusCode == 200) {
         return LoginModel.fromJson(response.data);
+      } else {
+        throw RepoException("Failed to log in: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw RepoException("Error while logging in: $e");
+    }
+  }
+
+  @override
+  Future<UserListResponse> getUserList() async {
+    try {
+      String url = ApiPath.v1 + ApiPath.userList;
+      final response = await apiService.get(path: url);
+
+      if (response.statusCode == 200) {
+        return UserListResponse.fromJson(response.data);
       } else {
         throw RepoException("Failed to log in: ${response.statusCode}");
       }

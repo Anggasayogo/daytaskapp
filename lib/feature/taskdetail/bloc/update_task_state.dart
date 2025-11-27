@@ -1,28 +1,30 @@
-// part of 'task_update_bloc.dart';
+part of 'update_task_bloc.dart';
 
-// abstract class UpdateTaskState extends Equatable {
-//   @override
-//   List<Object> get props => [];
-// }
+abstract class UpdateTaskState extends Equatable {
+  const UpdateTaskState();
 
-// class UpdateTaskInitialState extends UpdateTaskState {}
+  @override
+  List<Object?> get props => [];
+}
 
-// class UpdateTaskLoadingState extends UpdateTaskState {}
+class UpdateTaskInitialState extends UpdateTaskState {}
 
-// class UpdateTaskSuccessState extends UpdateTaskState {
-//   final UpdateTaskResponse updateTaskResponse;
+class UpdateTaskLoadingState extends UpdateTaskState {}
 
-//   UpdateTaskSuccessState(this.updateTaskResponse);
+class UpdateTaskSuccessState extends UpdateTaskState {
+  final String message;
 
-//   @override
-//   List<Object> get props => [updateTaskResponse];
-// }
+  const UpdateTaskSuccessState(this.message);
 
-// class UpdateTaskErrorState extends UpdateTaskState {
-//   final String errorMessage;
+  @override
+  List<Object?> get props => [message];
+}
 
-//   UpdateTaskErrorState(this.errorMessage);
+class UpdateTaskErrorState extends UpdateTaskState {
+  final String message;
 
-//   @override
-//   List<Object> get props => [errorMessage];
-// }
+  const UpdateTaskErrorState(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

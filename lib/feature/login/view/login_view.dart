@@ -16,12 +16,7 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true; // Status visibilitas password
-  
-  @override
-  void initState() {
-    emailController.text = "anggasayogosm@gmail.com";
-    passwordController.text = "12345678";
-  }
+
 
 
   @override
@@ -54,7 +49,7 @@ class _LoginViewState extends State<LoginView> {
               decoration: InputDecoration(
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                hintText: 'Masukkan email Anda',
+                hintText: 'Input email',
               ),
             ),
             const SizedBox(height: 15),
@@ -69,7 +64,7 @@ class _LoginViewState extends State<LoginView> {
               decoration: InputDecoration(
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                hintText: 'Masukkan kata sandi Anda',
+                hintText: 'Input Password',
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureText ? Icons.visibility_off : Icons.visibility,

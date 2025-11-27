@@ -2,13 +2,20 @@ import 'dart:async';
 import 'package:daytaskapp/app/my_app.dart';
 import 'package:daytaskapp/data/repo/authenticate/login_repo.dart';
 import 'package:daytaskapp/data/repo/rank/rank_repo.dart';
+import 'package:daytaskapp/data/repo/tasklist/point_repo.dart';
 import 'package:daytaskapp/data/repo/tasklist/priority_repo.dart';
 import 'package:daytaskapp/data/repo/tasklist/task_repo.dart';
 import 'package:daytaskapp/feature/home/bloc/priority_bloc.dart';
 import 'package:daytaskapp/feature/home/bloc/task_bloc.dart';
 import 'package:daytaskapp/feature/login/bloc/login_bloc.dart';
+import 'package:daytaskapp/feature/postask/bloc/create_task_bloc.dart';
+import 'package:daytaskapp/feature/postask/bloc/point_bloc.dart';
+import 'package:daytaskapp/feature/postask/bloc/user_list_bloc.dart';
 import 'package:daytaskapp/feature/rank/bloc/rank_bloc.dart';
-import 'package:flutter/material.dart';
+import 'package:daytaskapp/feature/report/bloc/report_bloc.dart';
+import 'package:daytaskapp/feature/taskdetail/bloc/task_detail_bloc.dart';
+import 'package:daytaskapp/feature/taskdetail/bloc/update_task_bloc.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
 
@@ -37,7 +44,28 @@ void main() {
           ),
           BlocProvider<RankBloc>(
             create: (BuildContext context) => RankBloc(rankRepo: getIt.get<RankRepo>())
-          )
+          ),
+          BlocProvider<TaskDetailBloc>(
+            create: (BuildContext context) => TaskDetailBloc(taskRepo: getIt.get<TaskRepo>())
+          ),
+          BlocProvider<UpdateTaskBloc>(
+            create: (BuildContext context) => UpdateTaskBloc(taskRepo: getIt.get<TaskRepo>())
+          ),
+          BlocProvider<UserListBloc>(
+            create: (BuildContext context) => UserListBloc(loginRepo: getIt.get<LoginRepo>())
+          ),
+          BlocProvider<CreateTaskBloc>(
+            create: (BuildContext context) => CreateTaskBloc(taskRepo: getIt.get<TaskRepo>())
+          ),
+          BlocProvider<PointBloc>(
+            create: (BuildContext context) => PointBloc(pointRepo: getIt.get<PointRepo>())
+          ),
+          BlocProvider<ReportBloc>(
+            create: (BuildContext context) => ReportBloc(taskRepo: getIt.get<TaskRepo>())
+          ),
+          BlocProvider<ReportBloc>(
+            create: (BuildContext context) => ReportBloc(taskRepo: getIt.get<TaskRepo>())
+          ),
         ],
         child: const MyApp(),
       ),

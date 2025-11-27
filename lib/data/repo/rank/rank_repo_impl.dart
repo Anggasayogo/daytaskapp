@@ -14,6 +14,7 @@ class RankRepoImpl implements RankRepo {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('userId');
+
       String url = ApiPath.v1 + ApiPath.rank;
 
       final response = await apiService.get(path: url);

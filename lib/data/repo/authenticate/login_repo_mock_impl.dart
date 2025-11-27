@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:daytaskapp/data/models/login_model.dart';
+import 'package:daytaskapp/data/models/user_list_model.dart';
 import 'package:daytaskapp/utils/exceptions/exceptions.dart';
 import 'login_repo.dart';
 
@@ -33,4 +34,23 @@ class LoginRepoMockImpl implements LoginRepo {
       throw RepoException('Invalid credentials');
     }
   }
+
+  Future<UserListResponse> getUserList() async {
+  // Simulasi delay jaringan
+  await Future.delayed(const Duration(seconds: 2));
+
+  // Mock response pengguna
+  return UserListResponse(
+    users: [
+      User(
+        userId: 6,
+        username: "Lishera Irene",
+        email: "irene@yahoo.com",
+        phone: "089525551789",
+        avatar: "path/to/new/avatar.jpg",
+      ),
+    ],
+  );
+}
+
 }

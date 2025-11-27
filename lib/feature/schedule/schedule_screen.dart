@@ -42,8 +42,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               onDateChange: (selectedDate) {
                 final date = DateFormat('yyyy-MM-dd').format(selectedDate!);
                 _onDatetimeSelected(date);
-                print("DATE CHANGGES ${date}");
-                // Handle date change
+                print("DATE CHANGES ${date}");
               },
               headerProps: const EasyHeaderProps(
                 monthPickerType: MonthPickerType.switcher,
@@ -85,13 +84,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 onPrioritySelected: _onPrioritySelected,
               ),
             ),
-            Flexible(
-              flex: 1,
+            Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: TaskListView(
                   priority: selectedPriority,
-                  datetime: selectedDatetime
+                  datetime: selectedDatetime,
                 ),
               ),
             ),

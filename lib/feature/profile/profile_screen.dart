@@ -1,6 +1,7 @@
 import 'package:daytaskapp/app/route/routes/route_path.dart';
 import 'package:daytaskapp/feature/login/bloc/login_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
+import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -145,7 +146,10 @@ class ProfileScreen extends StatelessWidget {
                               SizedBox(
                                 width: 40, // Atur lebar sesuai kebutuhan
                                 child: TextButton(
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    clearRoleId();
+                                    clearToken();
+                                    clearUserId();
                                     context.go(RoutePath.login);
                                   },
                                   child: const Icon(Icons.chevron_right_outlined),

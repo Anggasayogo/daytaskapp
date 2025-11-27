@@ -1,9 +1,21 @@
 === MENU === TASK
 1. ✅ Login -> Implement Login
-2. home -> priority higlight daily daily filter by priority
-3. home -> search
-4. List -> all list menu descending filter by DATE
-5. Create Task -> Only in role depthead
-6. Rank -> get list all Rank
-7. Chart -> get list Chart
-8. Profile -> info profil
+2. ✅ home -> priority higlight daily daily filter by priority
+3. ✅ home -> search
+4. ✅ List -> all list menu descending filter by DATE
+5. ✅ Create Task -> Only in role depthead
+6. ✅ Rank -> get list all Rank
+7. ✅ Chart -> get list Chart
+8. ✅ Profile -> info profil
+
+ Create Task
+✅ paste user list ke bottomsheet modal
+ubah status asign done in-progres ke bottomsheet modal
+kondisiin task list jika role 1 jadi ada nama pic nya
+buat feature download di spv & user
+update profile
+
+
+=========== PENULISAN ===================
+1. Tabel belum lengkap 
+2. Input Output ada yang kurang di babActivity

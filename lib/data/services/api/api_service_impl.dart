@@ -30,16 +30,14 @@ class ApiServiceImpl extends ApiService {
     // Menambahkan interceptor untuk menambahkan token ke header
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // Ambil token dari SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        final token = prefs.getString('auth_token'); // Ambil token yang disimpan
+        final token = prefs.getString('auth_token');
 
-        // Jika token ada, tambahkan ke header
         if (token != null) {
           options.headers['Authorization'] = '$token';
         }
 
-        return handler.next(options); // Melanjutkan request
+        return handler.next(options); 
       },
     ));
 

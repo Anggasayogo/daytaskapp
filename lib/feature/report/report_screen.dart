@@ -1,6 +1,13 @@
+import 'package:daytaskapp/feature/postask/bloc/user_list_bloc.dart';
+import 'package:daytaskapp/feature/postask/widget/bottom_sheet.dart';
+import 'package:daytaskapp/feature/report/widget/DownloadProgressDialog.dart';
 import 'package:daytaskapp/theme/theme.dart';
+import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Untuk format tanggal
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({Key? key}) : super(key: key);
@@ -12,6 +19,16 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
+  int? _selectedUserId;
+  String? _selectedUserName;
+  String? roleId;
+
+  @override
+  void initState() {
+    super.initState();
+    gettingRoleId();
+    context.read<UserListBloc>().add(const FetchUserListEvent());
+  }
 
   // Fungsi untuk memilih tanggal
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -33,27 +50,67 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  // Fungsi untuk memanggil API download
-  void _downloadReport() {
-    if (_startDate == null || _endDate == null) {
+  void gettingRoleId() async {
+    final role = await getRoleId();
+    setState(() {
+      roleId = role;
+    });
+  }
+
+  // Fungsi untuk memulai proses download laporan
+  Future<void> _downloadReport() async {
+    final userId = await getUserId();
+
+    if (_startDate == null || _endDate == null || userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please select both start and end dates")),
       );
       return;
     }
 
+    // Format tanggal
     String formattedStart = DateFormat('yyyy-MM-dd').format(_startDate!);
     String formattedEnd = DateFormat('yyyy-MM-dd').format(_endDate!);
 
-    // Simulasi API call
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content:
-              Text("Downloading report from $formattedStart to $formattedEnd")),
+    // Meminta izin penyimpanan
+    bool hasPermission = await _requestStoragePermission();
+    if (!hasPermission) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Storage permission is required")),
+      );
+      return;
+    }
+
+    // Menampilkan dialog unduhan
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return DownloadProgressDialog(
+          start: formattedStart,
+          end: formattedEnd,
+          id: roleId == '1' ? _selectedUserId.toString() : userId,
+        );
+      },
     );
 
-    // Di sini tambahkan kode HTTP untuk download laporan
-    // Contoh API call menggunakan Dio atau http package
+    // Mengirimkan event ke BLoC
+    // context.read<ReportBloc>().add(
+    //   DownloadReportEvent(
+    //     id: userId,
+    //     start: formattedStart,
+    //     end: formattedEnd,
+    //   ),
+    // );
+  }
+
+  // Meminta izin penyimpanan
+  static Future<bool> _requestStoragePermission() async {
+    final status = await Permission.manageExternalStorage.request();
+    if (status.isDenied || status.isPermanentlyDenied || status.isRestricted) {
+      throw "Please allow storage permission to upload files";
+    }
+
+    return status.isGranted;
   }
 
   @override
@@ -73,8 +130,8 @@ class _ReportScreenState extends State<ReportScreen> {
             const SizedBox(height: 20),
             Row(
               children: [
-                Flexible(
-                  flex: 1,
+                // Start Date Column
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -104,8 +161,9 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                Flexible(
-                  flex: 1,
+
+                // End Date Column
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -136,6 +194,86 @@ class _ReportScreenState extends State<ReportScreen> {
                 ),
               ],
             ),
+            Container(
+              child: roleId == '1'
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        Text(
+                          'Select User',
+                          style: semibold12_5.copyWith(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        SizedBox(
+                          width: double.infinity,
+                          child: BlocBuilder<UserListBloc, UserListState>(
+                            builder: (context, state) {
+                              if (state is UserListLoadingState) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else if (state is UserListLoadedState) {
+                                List<Map<String, dynamic>> items =
+                                    state.users.map((user) {
+                                  return {
+                                    "id": user.userId,
+                                    "name": user.username,
+                                  };
+                                }).toList();
+
+                                return TextButton(
+                                  onPressed: () {
+                                    BottomSheetWithList.show(
+                                      context,
+                                      items,
+                                      (selectedItem) {
+                                        var selectedId = selectedItem['id'];
+                                        setState(() {
+                                          _selectedUserId = selectedId;
+                                          _selectedUserName =
+                                              selectedItem['name'];
+                                        });
+                                      },
+                                    );
+                                  },
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      side: const BorderSide(
+                                          color: Colors.grey, width: 1),
+                                    ),
+                                  ),
+                                  child: _selectedUserName != null
+                                      ? Text(_selectedUserName!,
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black54))
+                                      : SvgPicture.asset(
+                                          'assets/icons/ic_plus_inactive.svg',
+                                          width: 30,
+                                          height: 30,
+                                        ),
+                                );
+                              } else if (state is UserListErrorState) {
+                                return const Center(
+                                    child:
+                                        Text('Error when getting user list!'));
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+            ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -143,9 +281,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 onPressed: _downloadReport,
                 style: TextButton.styleFrom(
                   backgroundColor: primary, // Warna latar belakang
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 15, // Padding atas dan bawah
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

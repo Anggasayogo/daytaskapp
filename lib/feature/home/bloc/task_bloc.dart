@@ -17,7 +17,6 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(TaskLoadingState());
 
     try {
-      // Panggil repositori untuk mengambil data tugas
       final taskResponse = await taskRepo.fetchTasks(
         priority: event.priority, 
         taskProgress: event.taskProgress,

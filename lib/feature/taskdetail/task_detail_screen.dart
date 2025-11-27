@@ -1,13 +1,15 @@
+import 'package:daytaskapp/feature/taskdetail/bloc/task_detail_bloc.dart';
+import 'package:daytaskapp/feature/taskdetail/bloc/update_task_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
+import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
 
-  const TaskDetailScreen({
-    Key? key,
-    required this.taskId,
-  }) : super(key: key);
+  const TaskDetailScreen({Key? key, required this.taskId}) : super(key: key);
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -15,11 +17,23 @@ class TaskDetailScreen extends StatefulWidget {
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late String _selectedProgress;
+  String? roleId;
 
   @override
   void initState() {
     super.initState();
-    _selectedProgress = 'asign'; // Inisialisasi nilai awal progress
+    _selectedProgress = 'asign';
+    gettingRoleId();
+    context
+        .read<TaskDetailBloc>()
+        .add(TaskDetailFetchEvent(taskId: widget.taskId));
+  }
+
+  void gettingRoleId() async {
+    final role = await getRoleId();
+    setState(() {
+      roleId = role;
+    });
   }
 
   @override
@@ -31,153 +45,244 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         title: const Text("Task Detail"),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          color: Colors.white,
-          elevation: 1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Task Name
-                const Text('Create DashBord Menu dengan chart Bar & Pie',
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: BlocBuilder<TaskDetailBloc, TaskDetailState>(
+        builder: (context, state) {
+          if (state is TaskDetailLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is TaskDetailSuccessState) {
+            final taskDetail = state.taskDetail;
+            final isProgesDone = state.taskDetail.taskProgres == 'done' && roleId == '2';
+            
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                color: Colors.white,
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 8),
-                // Task Docs
-                const Text('DOCS',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Progress and Priority
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Text(
-                          'Progress: ',
-                          style: TextStyle(fontSize: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Task Name
+                      Text(
+                        taskDetail.taskName,
+                        style: const TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
                         ),
-                        DropdownButton<String>(
-                          dropdownColor: Colors.white,
-                          value: _selectedProgress,
-                          items: [
-                            'asign',
-                            'in progress',
-                            'completed',
-                          ].map((progress) {
-                            return DropdownMenuItem(
-                              value: progress,
-                              child: Text(
-                                progress,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedProgress = value!;
-                            });
-                            // Tambahkan logika untuk menyimpan progress baru
-                            print('Task Progress Updated: $_selectedProgress');
-                          },
-                        ),
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
                       ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text('LOW',
+                      const SizedBox(height: 8),
+                      // Task Docs
+                      Text(
+                        taskDetail.taskDocs,
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // Dates
-                const Row(
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.calendar_today,
-                            color: Colors.blue, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          "2025-Sep-19",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    Row(
-                      children: [
-                        Icon(Icons.flag, color: Colors.blue, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          "2025-Sep-21",
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                // Save Button
-                SizedBox(
-                  width: double.infinity, 
-                  child: TextButton(
-                    onPressed: () {
-                      print('Progress Saved: $_selectedProgress');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'Task progress updated to $_selectedProgress'),
-                        ),
-                      );
-                    },
-                    style: TextButton.styleFrom(
-                      backgroundColor: primary, // Warna latar belakang
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16, // Padding atas dan bawah
+                      const SizedBox(height: 20),
+                      // Progress and Priority
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Text(
+                                'Progress : ',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Container(
+                                child: isProgesDone
+                                    ? const Text(
+                                        'done',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green,
+                                        ),
+                                      )
+                                    : DropdownButton<String>(
+                                        dropdownColor: Colors.white,
+                                        value: _selectedProgress,
+                                        items: [
+                                          'asign',
+                                          'in-progress',
+                                          'done',
+                                        ].map((progress) {
+                                          return DropdownMenuItem(
+                                            value: progress,
+                                            child: Text(
+                                              progress,
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedProgress = value!;
+                                          });
+                                        },
+                                      ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              taskDetail.priority,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                      const SizedBox(height: 20),
+                      // Dates
+                      Row(
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  color: Colors.blue, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                taskDetail.taskDate.isNotEmpty
+                                    ? (() {
+                                        try {
+                                          final date = DateTime.parse(
+                                              taskDetail.taskDate);
+                                          return DateFormat('yyyy MMM dd')
+                                              .format(date);
+                                        } catch (e) {
+                                          return 'Invalid Date';
+                                        }
+                                      })()
+                                    : 'No Date',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 16),
+                          Row(
+                            children: [
+                              const Icon(Icons.flag,
+                                  color: Colors.blue, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                taskDetail.taskDueDate.isNotEmpty
+                                    ? (() {
+                                        try {
+                                          final date = DateTime.parse(
+                                              taskDetail.taskDueDate);
+                                          return DateFormat('yyyy MMM dd')
+                                              .format(date);
+                                        } catch (e) {
+                                          return 'Invalid Date';
+                                        }
+                                      })()
+                                    : 'No Date',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                    child: Text(
-                      'Update Progress',
-                      style: semibold14.copyWith(
-                        fontSize: 16,
-                        color: Colors.white,
+                      const SizedBox(height: 30),
+                      // Save Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: BlocListener<UpdateTaskBloc, UpdateTaskState>(
+                          listener: (context, state) {
+                            if (state is TaskDetailSuccessState) {
+                              Navigator.pop(
+                                  context); // Close the loading dialog
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Task progress updated to $_selectedProgress'),
+                                ),
+                              );
+                            }
+                            if (state is UpdateTaskSuccessState) {
+                              Navigator.pop(
+                                  context); // Close the loading dialog
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(state.message),
+                                ),
+                              );
+                            }
+                          },
+                          child: TextButton(
+                            onPressed: () {
+                              // Trigger update progress when button is pressed
+                              int taskId = int.parse(widget.taskId);
+                              context.read<UpdateTaskBloc>().add(
+                                    UpdateTaskFetchEvent(
+                                      idTask: taskId,
+                                      idPoint: state.taskDetail.id_point,
+                                      taskName: state.taskDetail.taskName,
+                                      taskProgres: _selectedProgress,
+                                      taskDate: state.taskDetail.taskDate,
+                                      taskDueDate: state.taskDetail.taskDueDate,
+                                      taskDocs: state.taskDetail.taskDocs,
+                                      idPic: state.taskDetail.id_pic,
+                                      idSvp: state.taskDetail.id_svp,
+                                    ),
+                                  );
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor: primary, // Warna latar belakang
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10, // Padding atas dan bawah
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: BlocBuilder<UpdateTaskBloc, UpdateTaskState>(
+                              builder: (context, state) {
+                                if (state is UpdateTaskLoadingState) {
+                                  // Show spinner when loading
+                                  return const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  );
+                                }
+                                return Text(
+                                  'Update Progress',
+                                  style: regular12_5.copyWith(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
+            );
+          } else if (state is TaskDetailErrorState) {
+            return Center(child: Text(state.message));
+          }
+          return const SizedBox();
+        },
       ),
     );
   }

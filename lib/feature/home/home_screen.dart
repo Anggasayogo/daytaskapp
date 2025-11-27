@@ -1,4 +1,3 @@
-import 'package:daytaskapp/feature/home/bloc/task_bloc.dart';
 import 'package:daytaskapp/feature/home/view/priority_view.dart';
 import 'package:daytaskapp/feature/home/view/task_list_view.dart';
 import 'package:daytaskapp/theme/theme.dart';

@@ -1,42 +1,7 @@
-class TaskData {
-  final int idPoint;
-  final String taskName;
-  final String taskProgress;
-  final String taskDate;
-  final String taskDueDate;
-  final String taskDocs;
-  final int idPic;
-  final int idSvp;
-
-  TaskData({
-    required this.idPoint,
-    required this.taskName,
-    required this.taskProgress,
-    required this.taskDate,
-    required this.taskDueDate,
-    required this.taskDocs,
-    required this.idPic,
-    required this.idSvp,
-  });
-
-  factory TaskData.fromJson(Map<String, dynamic> json) {
-    return TaskData(
-      idPoint: json['id_point'],
-      taskName: json['task_name'],
-      taskProgress: json['task_progress'],
-      taskDate: json['task_date'],
-      taskDueDate: json['task_duedate'],
-      taskDocs: json['task_docs'],
-      idPic: json['id_pic'],
-      idSvp: json['id_svp'],
-    );
-  }
-}
-
 class UpdateTaskResponse {
   final bool status;
   final String message;
-  final List<TaskData> data;
+  final UpdateTaskData data;
 
   UpdateTaskResponse({
     required this.status,
@@ -45,13 +10,66 @@ class UpdateTaskResponse {
   });
 
   factory UpdateTaskResponse.fromJson(Map<String, dynamic> json) {
-    var list = json['data'] as List;
-    List<TaskData> taskList = list.map((i) => TaskData.fromJson(i)).toList();
-
     return UpdateTaskResponse(
-      status: json['status'],
-      message: json['message'],
-      data: taskList,
+      status: json['status'] as bool,
+      message: json['message'] as String,
+      data: UpdateTaskData.fromJson(json['data'] as Map<String, dynamic>),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'message': message,
+      'data': data.toJson(),
+    };
+  }
+}
+
+class UpdateTaskData {
+  final int idPoint;
+  final String taskName;
+  final String taskProgres;
+  final String taskDate;
+  final String taskDueDate;
+  final String taskDocs;
+  final int idPic;
+  final int idSvp;
+
+  UpdateTaskData({
+    required this.idPoint,
+    required this.taskName,
+    required this.taskProgres,
+    required this.taskDate,
+    required this.taskDueDate,
+    required this.taskDocs,
+    required this.idPic,
+    required this.idSvp,
+  });
+
+  factory UpdateTaskData.fromJson(Map<String, dynamic> json) {
+    return UpdateTaskData(
+      idPoint: json['id_point'] as int,
+      taskName: json['task_name'] as String,
+      taskProgres: json['task_progres'] as String,
+      taskDate: json['task_date'] as String,
+      taskDueDate: json['task_duedate'] as String,
+      taskDocs: json['task_docs'] as String,
+      idPic: json['id_pic'] as int,
+      idSvp: json['id_svp'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_point': idPoint,
+      'task_name': taskName,
+      'task_progres': taskProgres,
+      'task_date': taskDate,
+      'task_duedate': taskDueDate,
+      'task_docs': taskDocs,
+      'id_pic': idPic,
+      'id_svp': idSvp,
+    };
   }
 }
