@@ -3,6 +3,7 @@ import 'package:daytaskapp/feature/taskdetail/bloc/update_task_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -76,12 +77,35 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       // Task Docs
-                      Text(
-                        taskDetail.taskDocs,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Teks yang ingin dicopy
+                          Expanded(
+                            child: Text(
+                              taskDetail.taskDocs,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+
+                          // Tombol Copy
+                          IconButton(
+                            icon: const Icon(Icons.copy, size: 20, color: Colors.grey),
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: taskDetail.taskDocs));
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Teks berhasil disalin!"),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 20),
                       // Progress and Priority
@@ -110,6 +134,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                         items: [
                                           'asign',
                                           'in-progress',
+                                          'revision',
                                           'done',
                                         ].map((progress) {
                                           return DropdownMenuItem(
@@ -199,6 +224,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             ],
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 30),
+                      Text(
+                        'Comment',
+                        style: semibold12_5.copyWith(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      TextField(
+                        maxLines: 4,
+                        onChanged: (value) => (),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          hintText: 'Enter your comment',
+                        ),
+                        textInputAction: TextInputAction.done,
                       ),
                       const SizedBox(height: 30),
                       // Save Button

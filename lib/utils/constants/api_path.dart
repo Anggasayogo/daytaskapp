@@ -15,4 +15,5 @@ class ApiPath {
   static const String getCategoriesProduct = 'products/category';
   static const String getAllCategories = 'products/categories';
   static const String addToCart = 'carts';
+  static const String reward = 'reward';
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:daytaskapp/app/my_app.dart';
 import 'package:daytaskapp/data/repo/authenticate/login_repo.dart';
 import 'package:daytaskapp/data/repo/rank/rank_repo.dart';
+import 'package:daytaskapp/data/repo/reward/reward_repo.dart';
 import 'package:daytaskapp/data/repo/tasklist/point_repo.dart';
 import 'package:daytaskapp/data/repo/tasklist/priority_repo.dart';
 import 'package:daytaskapp/data/repo/tasklist/task_repo.dart';
@@ -11,6 +12,7 @@ import 'package:daytaskapp/feature/login/bloc/login_bloc.dart';
 import 'package:daytaskapp/feature/postask/bloc/create_task_bloc.dart';
 import 'package:daytaskapp/feature/postask/bloc/point_bloc.dart';
 import 'package:daytaskapp/feature/postask/bloc/user_list_bloc.dart';
+import 'package:daytaskapp/feature/profile/bloc/reward_bloc.dart';
 import 'package:daytaskapp/feature/rank/bloc/rank_bloc.dart';
 import 'package:daytaskapp/feature/report/bloc/report_bloc.dart';
 import 'package:daytaskapp/feature/taskdetail/bloc/task_detail_bloc.dart';
@@ -65,6 +67,9 @@ void main() {
           ),
           BlocProvider<ReportBloc>(
             create: (BuildContext context) => ReportBloc(taskRepo: getIt.get<TaskRepo>())
+          ),
+          BlocProvider<RewardBloc>(
+            create: (context) => RewardBloc(rewardRepo: getIt.get<RewardRepo>(), rankRepo: getIt.get<RankRepo>()),
           ),
         ],
         child: const MyApp(),

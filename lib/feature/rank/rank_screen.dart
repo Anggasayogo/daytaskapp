@@ -18,11 +18,11 @@ class RankScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 50),
             Center(
-              child: Text('Top 5 Task Rank',
+              child: Text('Top 5 Rank',
                   style: semibold14.copyWith(fontSize: 16)),
             ),
-            const SizedBox(height: 20),
-            AspectRatio(
+             const SizedBox(height: 20),
+        AspectRatio(
               aspectRatio: 13 / 9,
               child: BlocBuilder<RankBloc, RankState>(
                 builder: (context, state) {
@@ -52,8 +52,14 @@ class RankScreen extends StatelessWidget {
                 },
               ),
             ),
-
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            Text(
+              'Top User Rank',
+              style: semibold12_5.copyWith(
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
             const RankListView(),
           ],
         ),

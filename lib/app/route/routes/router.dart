@@ -1,6 +1,8 @@
 import 'package:daytaskapp/app/controller/navigation_cubit.dart';
 import 'package:daytaskapp/feature/main_screen.dart';
 import 'package:daytaskapp/feature/postask/post_task_screen.dart';
+import 'package:daytaskapp/feature/profile/detail_profile_screen.dart';
+import 'package:daytaskapp/feature/profile/profile_reward_screen.dart';
 import 'package:daytaskapp/feature/profile/profile_screen.dart';
 import 'package:daytaskapp/feature/rank/rank_screen.dart';
 import 'package:daytaskapp/feature/report/report_screen.dart';
@@ -112,6 +114,16 @@ final router = GoRouter(
       name: RoutePath.report,
       builder: (context, state) => const ReportScreen(),
     ),
+    GoRoute(
+      path: RoutePath.detail_profile,
+      name: RoutePath.detail_profile,
+      builder: (context, state) => const DetailProfileScreen(),
+    ),
+    GoRoute(
+      path: RoutePath.reward_list,
+      name: RoutePath.reward_list,
+      builder: (context, state) => const RewardList(),
+    )
   ],
   errorBuilder: (context, state) => const NotFoundScreen(),
 );

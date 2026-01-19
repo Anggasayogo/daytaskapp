@@ -1,7 +1,9 @@
 import 'package:daytaskapp/feature/login/bloc/login_bloc.dart';
+import 'package:daytaskapp/feature/login/widgets/configformdata.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:local_captcha/local_captcha.dart';
 
 class LoginView extends StatefulWidget {
   final Function(String email, String password) onSubmit;
@@ -15,15 +17,62 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController captchaController = TextEditingController();
   bool _obscureText = true; // Status visibilitas password
 
-
+  final LocalCaptchaController _captchaController = LocalCaptchaController();
+  final ConfigFormData _captchaConfig = ConfigFormData();
 
   @override
   void dispose() {
-    emailController.dispose(); // Membebaskan resource controller saat widget dihancurkan
+    emailController.dispose();
     passwordController.dispose();
+    captchaController.dispose();
+    _captchaController.dispose();
     super.dispose();
+  }
+
+  void _onLoginPressed(BuildContext context, bool isLoading) {
+    if (isLoading) return;
+
+    if (emailController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email dan password tidak boleh kosong'),
+        ),
+      );
+      return;
+    }
+
+    if (captchaController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('captcha tidak boleh kosong'),
+        ),
+      );
+
+      captchaController.clear();
+      _captchaController.refresh();
+      return;
+    }
+
+    final captchaResult = _captchaController.validate(captchaController.text);
+   
+    if (captchaResult != LocalCaptchaValidation.valid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('captcha tidak valid!')),
+      );
+
+      captchaController.clear();
+      _captchaController.refresh();
+      return;
+    }
+
+    widget.onSubmit(
+      emailController.text,
+      passwordController.text,
+    );
   }
 
   @override
@@ -79,7 +128,44 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
             ),
-            const SizedBox(height: 70),
+            const SizedBox(height: 40),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12), // 👈 radius di sini
+              child: LocalCaptcha(
+                controller: _captchaController,
+                height: 60,
+                width: MediaQuery.of(context).size.width,
+                backgroundColor: Colors.grey.shade200,
+                chars: _captchaConfig.chars,
+                length: _captchaConfig.length,
+                fontSize: _captchaConfig.fontSize > 0
+                    ? _captchaConfig.fontSize
+                    : null,
+                caseSensitive: _captchaConfig.caseSensitive,
+                codeExpireAfter: _captchaConfig.codeExpireAfter,
+                onCaptchaGenerated: (code) {
+                  debugPrint('Captcha generated: $code');
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: captchaController,
+              decoration: InputDecoration(
+                hintText: 'Input captcha',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {
+                    captchaController.clear();
+                    _captchaController.refresh();
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
             SizedBox(
               width: double.infinity, // Membuat tombol memanjang penuh
               child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
@@ -90,17 +176,14 @@ class _LoginViewState extends State<LoginView> {
                     // Validasi sebelum mengirim data
                     if (emailController.text.isEmpty ||
                         passwordController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content:
-                                Text('Email dan password tidak boleh kosong')),
+                            content: Text('Email dan password tidak boleh kosong')),
                       );
                       return;
                     }
 
-                    // Menyampaikan email dan password ke onSubmit
-                    widget.onSubmit(
-                        emailController.text, passwordController.text);
+                    _onLoginPressed(context, isLoading);
                   },
                   style: TextButton.styleFrom(
                     backgroundColor:

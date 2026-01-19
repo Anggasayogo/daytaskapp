@@ -9,6 +9,10 @@ import 'package:go_router/go_router.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  Future<String?> _loadAvatar() async {
+    return await getAvatar();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,43 +36,86 @@ class ProfileScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(
                           top: 40, bottom: 40, left: 15, right: 15),
                       child: Row(children: [
-                        Image.asset('assets/images/profile.png',
-                            width: 50, height: 50, fit: BoxFit.fill),
+                        FutureBuilder<String?>(
+                          future: _loadAvatar(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox(
+                                width: 50,
+                                height: 50,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              );
+                            }
+
+                            final avatar = snapshot.data;
+
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  25), // setengah dari width/height
+                              child: Image.network(
+                                avatar ??
+                                    "https://api.taksmanagement.my.id/assets/9815472.png",
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
                         const SizedBox(width: 20),
                         Expanded(
-                          flex: 1,
-                          child: BlocBuilder<LoginBloc, LoginState>(
-                            builder: (context, state) {
+                            flex: 1,
+                            child: BlocBuilder<LoginBloc, LoginState>(
+                                builder: (context, state) {
                               if (state is LoginSuccessState) {
-                                final username = state.loginModel.user.username; 
+                                final username = state.loginModel.user.username;
                                 final email = state.loginModel.user.email;
 
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(username,
-                                        style: semibold12_5.copyWith(fontSize: 16)),
+                                        style: semibold12_5.copyWith(
+                                            fontSize: 16)),
                                     Text(email,
                                         style: regular14.copyWith(fontSize: 9))
                                   ],
                                 );
-                              }else{
+                              } else {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Username',
-                                        style: semibold12_5.copyWith(fontSize: 16)),
+                                        style: semibold12_5.copyWith(
+                                            fontSize: 16)),
                                     Text('email@gmail.com',
                                         style: regular14.copyWith(fontSize: 13))
                                   ],
                                 );
                               }
-                            }
-                          )
-                        ),
+                            })),
                         const SizedBox(width: 10),
                         TextButton(
-                            onPressed: () {}, child: const Icon(Icons.edit))
+                            onPressed: () {
+                              context.pushNamed(RoutePath.detail_profile);
+                            },
+                            child: const Icon(Icons.edit))
                       ]),
                     ),
                   ),
@@ -99,6 +146,33 @@ class ProfileScreen extends StatelessWidget {
                                   },
                                   child:
                                       const Icon(Icons.chevron_right_outlined),
+                                ),
+                              ),
+                            ]),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: SizedBox(
+                                height: 0.5,
+                                child: Container(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            Row(children: [
+                              Icon(Icons.card_giftcard, color: primary),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                  flex: 1,
+                                  child: Text('Reward Saya',
+                                      style: regular14.copyWith(fontSize: 14))),
+                              const SizedBox(width: 10),
+                              SizedBox(
+                                width: 40, // Atur lebar sesuai kebutuhan
+                                child: TextButton(
+                                  onPressed: () {
+                                    context.push(RoutePath.reward_list);
+                                  },
+                                  child: Icon(Icons.chevron_right_outlined),
                                 ),
                               ),
                             ]),
@@ -152,7 +226,8 @@ class ProfileScreen extends StatelessWidget {
                                     clearUserId();
                                     context.go(RoutePath.login);
                                   },
-                                  child: const Icon(Icons.chevron_right_outlined),
+                                  child:
+                                      const Icon(Icons.chevron_right_outlined),
                                 ),
                               ),
                             ]),

@@ -1,6 +1,7 @@
 import 'package:daytaskapp/feature/home/view/priority_view.dart';
 import 'package:daytaskapp/feature/home/view/task_list_view.dart';
 import 'package:daytaskapp/theme/theme.dart';
+import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,6 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<String?> _loadAvatar() async {
+    return await getAvatar();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CategoriesBloc>(
@@ -62,7 +67,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       width: 50,
                       height: 50,
-                      child: Image.asset('assets/images/profile.png'),
+                      child: FutureBuilder<String?>(
+                          future: _loadAvatar(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const SizedBox(
+                                width: 50,
+                                height: 50,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              );
+                            }
+
+                            final avatar = snapshot.data;
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(25),
+                              child: Image.network(
+                              avatar ??
+                                    "https://api.taksmanagement.my.id/assets/9815472.png",
+                              ),
+                            );    
+                        }
+                      ),
                     ),
                   ],
                 ),

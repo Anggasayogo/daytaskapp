@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:daytaskapp/app/config/server_config.dart';
 import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:daytaskapp/data/models/login_model.dart';
@@ -23,9 +24,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
 
         if (loginData.status) {
+
           saveToken(loginData.token);
           saveUserId(loginData.user.user_id);
           saveRoleId(loginData.user.role_id);
+          saveAvatar("${ServerConfig.mainBaseUrl}${loginData.user.avatar}");
+          print("URL ="+"${ServerConfig.mainBaseUrl}${loginData.user.avatar}");
           emit(LoginSuccessState(loginData));
         } else {
           emit(LoginErrorState("Login failed: ${loginData.message}")); // Jika login gagal

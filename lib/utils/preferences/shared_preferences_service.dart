@@ -58,3 +58,23 @@ Future<void> clearRoleId() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('roleId');
 }
+
+//  ============== Saving Avatar ====================
+
+// Simpan roleId sebagai String
+Future<void> saveAvatar(String avatar) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('avatar', avatar);
+}
+
+// Ambil Avatar yang disimpan
+Future<String?> getAvatar() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('avatar'); // Konsisten mengambil sebagai String
+}
+
+// Hapus Avatar
+Future<void> clearAvatar() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('avatar');
+}

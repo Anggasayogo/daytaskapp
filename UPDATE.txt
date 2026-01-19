@@ -1,0 +1,8 @@
+1. AUTENTICATION -> 
+   - CAPTCHA
+2. TASK REVISION -> 
+   - TAMBAHKAN COMMENT
+   - revision
+3. Gamification 
+   - Badge
+   - Reward

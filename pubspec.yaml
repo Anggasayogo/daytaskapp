@@ -42,6 +42,7 @@ dependencies:
 
   # Shared Preferences (kompatibel penuh dan tanpa error kotlin)
   shared_preferences: ^2.3.2
+  local_captcha: ^1.0.5
 
 
 dev_dependencies:

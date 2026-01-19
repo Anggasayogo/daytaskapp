@@ -16,12 +16,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    
+    // default login 
+   
     // Delayed navigation after splash screen is shown
     Future.delayed(const Duration(seconds: 3), () async {
       if (mounted) {
         final isLogin = await getToken();
-        
+        print("Token "+isLogin.toString());
         if(isLogin == null) {
           context.goNamed(RoutePath.login); 
         } else {
