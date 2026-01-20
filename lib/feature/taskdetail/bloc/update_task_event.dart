@@ -15,6 +15,7 @@ class UpdateTaskFetchEvent extends UpdateTaskEvent {
   final String taskDate;
   final String taskDueDate;
   final String taskDocs;
+  final String feedback;
   final int idPic;
   final int idSvp;
 
@@ -26,6 +27,7 @@ class UpdateTaskFetchEvent extends UpdateTaskEvent {
     required this.taskDate,
     required this.taskDueDate,
     required this.taskDocs,
+    required this.feedback,
     required this.idPic,
     required this.idSvp,
   });
@@ -39,6 +41,7 @@ class UpdateTaskFetchEvent extends UpdateTaskEvent {
         taskDate,
         taskDueDate,
         taskDocs,
+        feedback,
         idPic,
         idSvp,
       ];

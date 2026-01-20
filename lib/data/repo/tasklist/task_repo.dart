@@ -29,6 +29,7 @@ abstract class TaskRepo {
     required String taskDate,
     required String taskDueDate,
     required String taskDocs,
+    required String feedback,
     required int idPic,
     required int idSvp,
   });

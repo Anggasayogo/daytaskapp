@@ -33,12 +33,14 @@ class RankListResponse {
 class RankData {
   final int userId;
   final String username;
+  final String avatar;
   final String totalPoint;
   final int ranking;
 
   RankData({
     required this.userId,
     required this.username,
+    required this.avatar,
     required this.totalPoint,
     required this.ranking,
   });
@@ -48,6 +50,7 @@ class RankData {
     return RankData(
       userId: json['user_id'],
       username: json['username'],
+      avatar: json['avatar'],
       totalPoint: json['total_point'],
       ranking: json['ranking'],
     );
@@ -58,6 +61,7 @@ class RankData {
     return {
       'user_id': userId,
       'username': username,
+      'avatar': avatar,
       'total_point': totalPoint,
       'ranking': ranking,
     };

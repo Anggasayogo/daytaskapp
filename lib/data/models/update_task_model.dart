@@ -33,6 +33,7 @@ class UpdateTaskData {
   final String taskDate;
   final String taskDueDate;
   final String taskDocs;
+  final String feedback;
   final int idPic;
   final int idSvp;
 
@@ -43,6 +44,7 @@ class UpdateTaskData {
     required this.taskDate,
     required this.taskDueDate,
     required this.taskDocs,
+    required this.feedback,
     required this.idPic,
     required this.idSvp,
   });
@@ -55,6 +57,7 @@ class UpdateTaskData {
       taskDate: json['task_date'] as String,
       taskDueDate: json['task_duedate'] as String,
       taskDocs: json['task_docs'] as String,
+      feedback: json['feedback'] as String,
       idPic: json['id_pic'] as int,
       idSvp: json['id_svp'] as int,
     );
@@ -68,6 +71,7 @@ class UpdateTaskData {
       'task_date': taskDate,
       'task_duedate': taskDueDate,
       'task_docs': taskDocs,
+      'feedback': feedback,
       'id_pic': idPic,
       'id_svp': idSvp,
     };

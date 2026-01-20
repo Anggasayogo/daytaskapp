@@ -18,6 +18,7 @@ class TaskDetailScreen extends StatefulWidget {
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late String _selectedProgress;
+  final TextEditingController _feedbackController = TextEditingController();
   String? roleId;
 
   @override
@@ -53,6 +54,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           } else if (state is TaskDetailSuccessState) {
             final taskDetail = state.taskDetail;
             final isProgesDone = state.taskDetail.taskProgres == 'done' && roleId == '2';
+            final superadmin = roleId == '1';
+            final employe = roleId == '2';
             
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -134,7 +137,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                         items: [
                                           'asign',
                                           'in-progress',
-                                          'revision',
+                                          if (superadmin) 'revision',
                                           'done',
                                         ].map((progress) {
                                           return DropdownMenuItem(
@@ -226,26 +229,53 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 30),
-                      Text(
-                        'Comment',
-                        style: semibold12_5.copyWith(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      TextField(
-                        maxLines: 4,
-                        onChanged: (value) => (),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: employe ? [
+                          Text(
+                            'Task Feedback',
+                            style: semibold12_5.copyWith(
+                              fontSize: 15,
+                              color: Colors.black,
+                            ),
                           ),
-                          hintText: 'Enter your comment',
-                        ),
-                        textInputAction: TextInputAction.done,
+                          const SizedBox(height: 10),
+                          Text(
+                            state.taskDetail.feedback,
+                            style: regular14.copyWith(
+                              fontSize: 14,
+                              color: Colors.black38,
+                            ),
+                          ),
+                        ] : [],
                       ),
                       const SizedBox(height: 30),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: superadmin ? [
+                          Text(
+                            'Feedback',
+                            style: semibold12_5.copyWith(
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          TextField(
+                            controller: _feedbackController,
+                            maxLines: 4,
+                            onChanged: (value) => (),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              hintText: 'Enter your Feedback',
+                            ),
+                            textInputAction: TextInputAction.done,
+                          ),
+                          const SizedBox(height: 30),
+                        ] : [],
+                      ),
                       // Save Button
                       SizedBox(
                         width: double.infinity,
@@ -284,6 +314,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                       taskDate: state.taskDetail.taskDate,
                                       taskDueDate: state.taskDetail.taskDueDate,
                                       taskDocs: state.taskDetail.taskDocs,
+                                      feedback: _feedbackController.text,
                                       idPic: state.taskDetail.id_pic,
                                       idSvp: state.taskDetail.id_svp,
                                     ),

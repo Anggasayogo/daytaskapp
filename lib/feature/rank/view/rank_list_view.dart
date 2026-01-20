@@ -40,14 +40,16 @@ class _RankListViewState extends State<RankListView> {
   }
 
   /// Avatar + Rank Number
-  Widget _buildAvatar(int ranking) {
+  Widget _buildAvatar(int ranking, String avatar) {
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
         CircleAvatar(
           radius: 22,
-          backgroundImage:
-              const AssetImage('assets/images/ic_avatar2.png'),
+          backgroundImage: NetworkImage(
+          "https://api.taksmanagement.my.id/${avatar}" ??
+              "https://api.taksmanagement.my.id/assets/9815472.png",
+        ),
         ),
         CircleAvatar(
           radius: 9,
@@ -139,7 +141,7 @@ class _RankListViewState extends State<RankListView> {
                           const SizedBox(width: 12),
 
                           /// 👤 Avatar + Rank Number
-                          _buildAvatar(rank.ranking),
+                          _buildAvatar(rank.ranking, rank.avatar),
 
                           const SizedBox(width: 12),
 

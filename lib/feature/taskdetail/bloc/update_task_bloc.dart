@@ -24,6 +24,7 @@ class UpdateTaskBloc extends Bloc<UpdateTaskEvent, UpdateTaskState> {
         taskDate: event.taskDate,
         taskDueDate: event.taskDueDate,
         taskDocs: event.taskDocs,
+        feedback: event.feedback,
         idPic: event.idPic,
         idSvp: event.idSvp,
       );

@@ -124,6 +124,7 @@ class TaskRepoImpl implements TaskRepo {
         "task_date": taskDate,
         "task_duedate": taskDueDate,
         "task_docs": taskDocs,
+        "feedback": "",
         "id_pic": idPic,
         "id_svp": idSvp,
         "id_priority": idPriority
@@ -150,6 +151,7 @@ class TaskRepoImpl implements TaskRepo {
     required String taskDate,
     required String taskDueDate,
     required String taskDocs,
+    required String feedback,
     required int idPic,
     required int idSvp,
   }) async {
@@ -163,9 +165,12 @@ class TaskRepoImpl implements TaskRepo {
         "task_date": taskDate,
         "task_duedate": taskDueDate,
         "task_docs": taskDocs,
+        "feedback": feedback,
         "id_pic": idPic,
         "id_svp": idSvp,
       };
+
+      print("DATTTAAAAA ${data}");
 
       final response = await apiService.put(path: url, data: data);
 

@@ -54,6 +54,7 @@ class TaskRepoMockImpl implements TaskRepo {
         taskDate: DateTime.parse("2025-01-17T01:30:00.000Z").toIso8601String(), // Convert DateTime ke String
         taskDueDate: DateTime.parse("2024-01-18T10:30:00.000Z").toIso8601String(), // Convert DateTime ke String
         taskDocs: "docs.pdf",
+        feedback: 'revisi',
         username: "Angga Maul",
         email: "anggasayogosm@gmail.com",
         point: 10,
@@ -72,6 +73,7 @@ class TaskRepoMockImpl implements TaskRepo {
     required String taskDate,
     required String taskDueDate,
     required String taskDocs,
+    required String feedback,
     required int idPic,
     required int idSvp,
   }) async {
@@ -86,6 +88,7 @@ class TaskRepoMockImpl implements TaskRepo {
         taskDate: taskDate,
         taskDueDate: taskDueDate,
         taskDocs: taskDocs,
+        feedback: feedback,
         idPic: idPic,
         idSvp: idSvp,
       ),

@@ -28,6 +28,7 @@ class TaskDetailData {
   final String taskDate;
   final String taskDueDate;
   final String taskDocs;
+  final String feedback;
   final String username;
   final String email;
   final int point;
@@ -43,6 +44,7 @@ class TaskDetailData {
     required this.taskDate,
     required this.taskDueDate,
     required this.taskDocs,
+    required this.feedback,
     required this.username,
     required this.email,
     required this.point,
@@ -60,6 +62,7 @@ class TaskDetailData {
       taskDate: json['task_date'],
       taskDueDate: json['task_duedate'],
       taskDocs: json['task_docs'],
+      feedback: json['feedback'],
       username: json['username'],
       email: json['email'],
       point: json['point'],
