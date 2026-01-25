@@ -24,12 +24,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
 
         if (loginData.status) {
-
+          saveUsername(loginData.user.username);
           saveToken(loginData.token);
           saveUserId(loginData.user.user_id);
           saveRoleId(loginData.user.role_id);
           saveAvatar("${ServerConfig.mainBaseUrl}${loginData.user.avatar}");
-          print("URL ="+"${ServerConfig.mainBaseUrl}${loginData.user.avatar}");
+          
           emit(LoginSuccessState(loginData));
         } else {
           emit(LoginErrorState("Login failed: ${loginData.message}")); // Jika login gagal

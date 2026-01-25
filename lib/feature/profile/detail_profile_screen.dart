@@ -1,5 +1,13 @@
+import 'dart:io';
+
+import 'package:daytaskapp/feature/profile/bloc/profile_bloc.dart';
+import 'package:daytaskapp/feature/profile/bloc/profile_event.dart';
+import 'package:daytaskapp/feature/profile/bloc/profile_state.dart';
 import 'package:daytaskapp/theme/theme.dart';
+import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class DetailProfileScreen extends StatefulWidget {
   const DetailProfileScreen({super.key});
@@ -9,127 +17,340 @@ class DetailProfileScreen extends StatefulWidget {
 }
 
 class _DetailProfileScreenState extends State<DetailProfileScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
+
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
-  String? avatarUrl =
-      "https://ui-avatars.com/api/?name=User"; // contoh avatar awal
+  File? avatarFile;
+  String? avatarUrl;
+
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvatar();
+  }
+
+  Future<void> _loadAvatar() async {
+    final avatar = await getAvatar();
+    setState(() {
+      avatarUrl = avatar;
+    });
+  }
+
+  // ================= IMAGE PICKER =================
+  Future<void> pickImage(ImageSource source) async {
+    final XFile? image =
+        await _picker.pickImage(source: source, imageQuality: 80);
+
+    if (image != null) {
+      setState(() {
+        avatarFile = File(image.path);
+      });
+    }
+  }
+
+  void showPickImageSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Kamera"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo),
+                title: const Text("Galeri"),
+                onTap: () {
+                  Navigator.pop(context);
+                  pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ================= SUBMIT =================
+  void submit() async {
+    final userIdStr = await getUserId();
+    final roleId = await getRoleId();
+
+    final userId = int.tryParse(userIdStr ?? '');
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User ID tidak valid")),
+      );
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      context.read<ProfileBloc>().add(
+            UpdateProfileEvent(
+              userId: userId,
+              username: usernameController.text,
+              email: emailController.text,
+              phone: phoneController.text,
+              roleId: roleId.toString(),
+              divisiId: "1",
+              password: passwordController.text.isEmpty ? '' : passwordController.text,
+              avatar: avatarFile,
+            ),
+          );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          'Update Profile', 
-          style: semibold14.copyWith(color: Colors.black, fontSize: 16)
-        ),
+    return BlocListener<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state is ProfileSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.response.message)),
+          );
+          Navigator.pop(context);
+        }
+
+        if (state is ProfileError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      child: Scaffold(
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(
-          color: Colors.black
+        appBar: AppBar(
+          title: Text(
+            'Update Profile',
+            style: semibold14.copyWith(color: Colors.black, fontSize: 16),
+          ),
+          backgroundColor: Colors.white,
+          iconTheme: const IconThemeData(color: Colors.black),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Avatar
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 55,
-                    backgroundImage: NetworkImage(avatarUrl!),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: InkWell(
-                      onTap: () {
-                        // TODO: Implement upload foto
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue,
-                        ),
-                        child: const Icon(Icons.camera_alt,
-                            color: Colors.white, size: 20),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // ================= AVATAR =================
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 55,
+                        backgroundImage: avatarFile != null
+                            ? FileImage(avatarFile!)
+                            : (avatarUrl != null && avatarUrl!.isNotEmpty)
+                                ? NetworkImage(avatarUrl!)
+                                : const NetworkImage(
+                                    "https://ui-avatars.com/api/?name=User",
+                                  ) as ImageProvider,
                       ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: showPickImageSheet,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.blue,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                buildInput(
+                  label: "Username",
+                  hint: "Input Username",
+                  controller: usernameController,
+                  validator: (v) =>
+                      v!.isEmpty ? "Username tidak boleh kosong" : null,
+                ),
+
+                buildInput(
+                  label: "Email",
+                  hint: "Input Email",
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) {
+                    if (v!.isEmpty) return "Email wajib diisi";
+                    if (!v.contains('@')) return "Email tidak valid";
+                    return null;
+                  },
+                ),
+
+                buildInput(
+                  label: "No. HP",
+                  hint: "Input Phone Number",
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  validator: (v) {
+                    if (v!.isEmpty) return "Nomor HP wajib diisi";
+                    if (v.length < 10) return "Nomor terlalu pendek";
+                    return null;
+                  },
+                ),
+
+                buildInput(
+                  label: "Password Baru",
+                  hint: "Input Password Baru",
+                  controller: passwordController,
+                  obscure: obscurePassword,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return null;
+                    if (v.length < 6) return "Minimal 6 karakter";
+                    return null;
+                  },
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
-                  )
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // Username
-            const Text("Username"),
-            const SizedBox(height: 6),
-            TextField(
-              controller: usernameController,
-              decoration: InputDecoration(
-                hintText: "username",
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Email
-            const Text("Email"),
-            const SizedBox(height: 6),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: "email",
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Password
-            const Text("Password"),
-            const SizedBox(height: 6),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Konfirmasi password",
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            // Tombol Simpan
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // TODO: simpan update profile ke API
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    onPressed: () {
+                      setState(() {
+                        obscurePassword = !obscurePassword;
+                      });
+                    },
+                  ),
                 ),
-                child: const Text(
-                  "Simpan Perubahan",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+
+                buildInput(
+                  label: "Konfirmasi Password",
+                  hint: "Input Konfirmasi Password",
+                  controller: confirmPasswordController,
+                  obscure: obscureConfirmPassword,
+                  validator: (v) {
+                    if (passwordController.text.isEmpty) return null;
+                    if (v != passwordController.text) {
+                      return "Password tidak sama";
+                    }
+                    return null;
+                  },
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureConfirmPassword = !obscureConfirmPassword;
+                      });
+                    },
+                  ),
                 ),
-              ),
-            )
-          ],
+
+                const SizedBox(height: 30),
+
+                BlocBuilder<ProfileBloc, ProfileState>(
+                  builder: (context, state) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed:
+                            state is ProfileLoading ? null : submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primary,
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: state is ProfileLoading
+                            ? const SizedBox(
+                                height: 22,
+                                width: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                "Update Profile",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  // ================= INPUT =================
+  Widget buildInput({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    String? Function(String?)? validator,
+    bool obscure = false,
+    TextInputType? keyboardType,
+    Widget? suffixIcon,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          validator: validator,
+          decoration: InputDecoration(
+            hintText: hint,
+            suffixIcon: suffixIcon,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 }

@@ -1,6 +1,7 @@
 class ApiPath {
   static const v1 = 'api/v1/';
   static const String login = 'auth/login';
+  static const String updateProfile = 'auth/user/update/';
   static const String priority = 'priority/list';
   static const String rank = 'point/rank';
   static const String tasklist = 'task/user/list';

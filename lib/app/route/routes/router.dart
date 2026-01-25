@@ -78,7 +78,7 @@ final router = GoRouter(
           ),
           GoRoute(
             path: RoutePath.profile,
-            pageBuilder: (context, state) => const NoTransitionPage(
+            pageBuilder: (context, state) => NoTransitionPage(
               child: ProfileScreen(),
             ),
             routes: [],
@@ -117,7 +117,7 @@ final router = GoRouter(
     GoRoute(
       path: RoutePath.detail_profile,
       name: RoutePath.detail_profile,
-      builder: (context, state) => const DetailProfileScreen(),
+      builder: (context, state) => DetailProfileScreen(),
     ),
     GoRoute(
       path: RoutePath.reward_list,
