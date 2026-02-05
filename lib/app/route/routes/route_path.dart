@@ -12,4 +12,5 @@ class RoutePath {
   static const String report = '/report';
   static const String detail_profile = '/detail_profile';
   static const String reward_list = '/reward_list';
+  static const String kelola_reward_list = '/kelola_reward_list';
 }

@@ -2,6 +2,7 @@ import 'package:daytaskapp/app/controller/navigation_cubit.dart';
 import 'package:daytaskapp/feature/main_screen.dart';
 import 'package:daytaskapp/feature/postask/post_task_screen.dart';
 import 'package:daytaskapp/feature/profile/detail_profile_screen.dart';
+import 'package:daytaskapp/feature/profile/profile_kelola_reward_screen.dart';
 import 'package:daytaskapp/feature/profile/profile_reward_screen.dart';
 import 'package:daytaskapp/feature/profile/profile_screen.dart';
 import 'package:daytaskapp/feature/rank/rank_screen.dart';
@@ -123,6 +124,11 @@ final router = GoRouter(
       path: RoutePath.reward_list,
       name: RoutePath.reward_list,
       builder: (context, state) => const RewardList(),
+    ),
+    GoRoute(
+      path: RoutePath.kelola_reward_list,
+      name: RoutePath.kelola_reward_list,
+      builder: (context, state) => const KelolaRewardScreen(),
     )
   ],
   errorBuilder: (context, state) => const NotFoundScreen(),

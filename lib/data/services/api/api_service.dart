@@ -6,4 +6,5 @@ abstract class ApiService {
   Future<ApiResponse> get({required String path, Map<String, dynamic>? query});
   Future<ApiResponse> post({required String path,Map<String, dynamic>? query, dynamic data});
   Future<ApiResponse> put({required String path, Map<String, dynamic>? query, dynamic data});
+  Future<ApiResponse> delete({required String path, Map<String, dynamic>? query, dynamic data});
 }

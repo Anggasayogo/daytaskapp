@@ -107,4 +107,24 @@ class ApiServiceImpl extends ApiService {
     }
   }
 
+  @override
+  Future<ApiResponse> delete({
+    required String path,
+    Map<String, dynamic>? query,
+    dynamic data,
+  }) async {
+    try {
+      final response = await _dio.delete(
+        path,
+        queryParameters: query,
+        data: data,
+      );
+      return ApiResponse.fromDioResponse(response);
+    } on DioException catch (e) {
+      return ApiResponse.error(e.message ?? e.toString());
+    } catch (e) {
+      return ApiResponse.error(e.toString());
+    }
+  }
+
 }

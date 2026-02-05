@@ -13,7 +13,6 @@ class UpdateProfileEvent extends ProfileEvent {
   final String phone;
   final String roleId;
   final String divisiId;
-  final String password;
   final File? avatar;
 
   UpdateProfileEvent({
@@ -23,7 +22,6 @@ class UpdateProfileEvent extends ProfileEvent {
     required this.phone,
     required this.roleId,
     required this.divisiId,
-    required this.password,
     this.avatar,
   });
 
@@ -35,7 +33,6 @@ class UpdateProfileEvent extends ProfileEvent {
         phone,
         roleId,
         divisiId,
-        password,
         avatar,
       ];
 }

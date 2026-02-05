@@ -25,7 +25,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         phone: event.phone,
         roleId: event.roleId,
         divisiId: event.divisiId,
-        password: event.password,
         avatar: event.avatar,
       );
 

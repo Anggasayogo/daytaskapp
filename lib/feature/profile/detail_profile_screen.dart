@@ -23,26 +23,26 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
 
   File? avatarFile;
   String? avatarUrl;
 
-  bool obscurePassword = true;
-  bool obscureConfirmPassword = true;
-
   @override
   void initState() {
     super.initState();
-    _loadAvatar();
+    _loadInitialData();
   }
 
-  Future<void> _loadAvatar() async {
+  Future<void> _loadInitialData() async {
     final avatar = await getAvatar();
+    final username = await getUsername();
+    final email = await getEmail();
+
     setState(() {
       avatarUrl = avatar;
+      usernameController.text = username ?? "";
+      emailController.text = email ?? "";
+      // phoneController.text = ... (ambil dari pref jika ada)
     });
   }
 
@@ -114,8 +114,7 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
               email: emailController.text,
               phone: phoneController.text,
               roleId: roleId.toString(),
-              divisiId: "1",
-              password: passwordController.text.isEmpty ? '' : passwordController.text,
+              divisiId: "1", // Sesuaikan dengan kebutuhan divisi
               avatar: avatarFile,
             ),
           );
@@ -128,14 +127,18 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
       listener: (context, state) {
         if (state is ProfileSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.response.message)),
+            SnackBar(
+                content: Text(state.response.message),
+                behavior: SnackBarBehavior.floating),
           );
           Navigator.pop(context);
         }
 
         if (state is ProfileError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(
+                content: Text(state.message),
+                behavior: SnackBarBehavior.floating),
           );
         }
       },
@@ -147,6 +150,7 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
             style: semibold14.copyWith(color: Colors.black, fontSize: 16),
           ),
           backgroundColor: Colors.white,
+          elevation: 0,
           iconTheme: const IconThemeData(color: Colors.black),
         ),
         body: SingleChildScrollView(
@@ -161,6 +165,7 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 55,
+                        backgroundColor: Colors.grey.shade200,
                         backgroundImage: avatarFile != null
                             ? FileImage(avatarFile!)
                             : (avatarUrl != null && avatarUrl!.isNotEmpty)
@@ -176,9 +181,9 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
                           onTap: showPickImageSheet,
                           child: Container(
                             padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.blue,
+                              color: primary,
                             ),
                             child: const Icon(
                               Icons.camera_alt,
@@ -226,56 +231,6 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
                   },
                 ),
 
-                buildInput(
-                  label: "Password Baru",
-                  hint: "Input Password Baru",
-                  controller: passwordController,
-                  obscure: obscurePassword,
-                  validator: (v) {
-                    if (v == null || v.isEmpty) return null;
-                    if (v.length < 6) return "Minimal 6 karakter";
-                    return null;
-                  },
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        obscurePassword = !obscurePassword;
-                      });
-                    },
-                  ),
-                ),
-
-                buildInput(
-                  label: "Konfirmasi Password",
-                  hint: "Input Konfirmasi Password",
-                  controller: confirmPasswordController,
-                  obscure: obscureConfirmPassword,
-                  validator: (v) {
-                    if (passwordController.text.isEmpty) return null;
-                    if (v != passwordController.text) {
-                      return "Password tidak sama";
-                    }
-                    return null;
-                  },
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscureConfirmPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        obscureConfirmPassword = !obscureConfirmPassword;
-                      });
-                    },
-                  ),
-                ),
-
                 const SizedBox(height: 30),
 
                 BlocBuilder<ProfileBloc, ProfileState>(
@@ -283,12 +238,10 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed:
-                            state is ProfileLoading ? null : submit,
+                        onPressed: state is ProfileLoading ? null : submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primary,
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 14),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -307,6 +260,7 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
@@ -327,26 +281,25 @@ class _DetailProfileScreenState extends State<DetailProfileScreen> {
     required String hint,
     required TextEditingController controller,
     String? Function(String?)? validator,
-    bool obscure = false,
     TextInputType? keyboardType,
-    Widget? suffixIcon,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
-        const SizedBox(height: 6),
+        Text(label, style: semibold12_5),
+        const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          obscureText: obscure,
           keyboardType: keyboardType,
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            suffixIcon: suffixIcon,
+            hintStyle: regular14.copyWith(color: Colors.grey),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
         const SizedBox(height: 20),
