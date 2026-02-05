@@ -56,6 +56,7 @@ class TaskRepoMockImpl implements TaskRepo {
         taskDocs: "docs.pdf",
         feedback: 'revisi',
         username: "Angga Maul",
+        svp_name: 'Azky',
         email: "anggasayogosm@gmail.com",
         point: 10,
         priority: "LOW",

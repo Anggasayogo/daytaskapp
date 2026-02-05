@@ -50,6 +50,15 @@ class TaskDetailView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    Text(
+                      taskDetail.taskDocs,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     // Progress and Priority
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

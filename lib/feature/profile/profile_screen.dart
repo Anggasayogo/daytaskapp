@@ -1,3 +1,4 @@
+import 'package:daytaskapp/app/config/server_config.dart';
 import 'package:daytaskapp/app/route/routes/route_path.dart';
 import 'package:daytaskapp/theme/theme.dart';
 import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
@@ -15,6 +16,10 @@ class ProfileScreen extends StatelessWidget {
   // Load username dari SharedPreferences
   Future<String?> _loadUsername() async {
     return await getUsername();
+  }
+
+  Future<String?> _loadEmail() async {
+    return await getEmail();
   }
 
   @override
@@ -63,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(25),
                                 child: Image.network(
                                   avatar ??
-                                      "https://api.taksmanagement.my.id/assets/9815472.png",
+                                      "${ServerConfig.mainBaseUrl}/assets/9815472.png",
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
@@ -92,18 +97,42 @@ class ProfileScreen extends StatelessWidget {
                             child: FutureBuilder<String?>(
                               future: _loadUsername(),
                               builder: (context, snapshot) {
-                                final username =
-                                    snapshot.data ?? "Username";
+                                final username = snapshot.data ?? "Username";
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(username,
                                         style: semibold12_5.copyWith(
                                             fontSize: 16)),
-                                    Text('email@gmail.com',
-                                        style: regular14.copyWith(
-                                          fontSize: 13,
-                                        )),
+                                    FutureBuilder<String?>(
+                                      future: _loadEmail(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          // Indikator loading kecil agar tidak merusak layout
+                                          return const SizedBox(
+                                            width: 15,
+                                            height: 15,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          );
+                                        }
+
+                                        // Ambil data dari snapshot, jika null tampilkan default
+                                        final email =
+                                            snapshot.data ?? "email@gmail.com";
+
+                                        return Text(
+                                          email,
+                                          style: regular14.copyWith(
+                                            fontSize: 13,
+                                            color: Colors.grey
+                                                .shade600, // Tambahkan warna abu agar lebih estetik
+                                          ),
+                                        );
+                                      },
+                                    )
                                   ],
                                 );
                               },

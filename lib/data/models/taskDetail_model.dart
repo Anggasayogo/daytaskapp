@@ -30,6 +30,7 @@ class TaskDetailData {
   final String taskDocs;
   final String feedback;
   final String username;
+  final String svp_name;
   final String email;
   final int point;
   final String priority;
@@ -46,6 +47,7 @@ class TaskDetailData {
     required this.taskDocs,
     required this.feedback,
     required this.username,
+    required this.svp_name,
     required this.email,
     required this.point,
     required this.priority,
@@ -64,6 +66,7 @@ class TaskDetailData {
       taskDocs: json['task_docs'],
       feedback: json['feedback'],
       username: json['username'],
+      svp_name: json['svp_name'],
       email: json['email'],
       point: json['point'],
       priority: json['priority'],

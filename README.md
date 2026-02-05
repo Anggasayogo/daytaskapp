@@ -14,3 +14,21 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+################# update 2026-02-04 ###############################
+
+- remove captha => done
+- persisten email => done
+- show name post asign task => done
+- file asign task => done
+- nama pemilik task dan nama yang mengasign task => done
+
+- inprogres -> kuning 
+- asingn -> blue
+- done -> hijau
+- revision -> red
+- kelola reward admin 
+- profil only only emil usename no hp
+- password buat menu baru di profile
+

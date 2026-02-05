@@ -99,3 +99,24 @@ Future<void> clearUsername() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('username');
 }
+
+
+//  ============== Saving email ====================
+
+// Simpan email sebagai String
+Future<void> saveEmail(String email) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('email', email);
+}
+
+// Ambil email yang disimpan
+Future<String?> getEmail() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('email'); // Konsisten mengambil sebagai String
+}
+
+// Hapus email
+Future<void> clearEmail() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('email');
+}

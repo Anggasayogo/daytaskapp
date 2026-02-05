@@ -28,6 +28,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           saveToken(loginData.token);
           saveUserId(loginData.user.user_id);
           saveRoleId(loginData.user.role_id);
+          saveEmail(loginData.user.email);
           saveAvatar("${ServerConfig.mainBaseUrl}${loginData.user.avatar}");
           
           emit(LoginSuccessState(loginData));

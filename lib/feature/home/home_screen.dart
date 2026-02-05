@@ -1,3 +1,4 @@
+import 'package:daytaskapp/app/config/server_config.dart';
 import 'package:daytaskapp/feature/home/view/priority_view.dart';
 import 'package:daytaskapp/feature/home/view/task_list_view.dart';
 import 'package:daytaskapp/theme/theme.dart';
@@ -85,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(25),
                               child: Image.network(
                               avatar ??
-                                    "https://api.taksmanagement.my.id/assets/9815472.png",
+                                    "${ServerConfig.mainBaseUrl}/assets/9815472.png",
                               ),
                             );    
                         }

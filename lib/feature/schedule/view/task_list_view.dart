@@ -1,197 +1,7 @@
-// import 'package:daytaskapp/app/route/routes/route_path.dart';
-// import 'package:daytaskapp/feature/home/bloc/task_bloc.dart';
-// import 'package:daytaskapp/theme/theme.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:go_router/go_router.dart';
-// import 'package:intl/intl.dart';
-
-// class TaskListView extends StatefulWidget {
-//   final String? priority;
-//   final String? datetime;
-//   const TaskListView({super.key, this.priority, this.datetime});
-
-//   @override
-//   State<TaskListView> createState() => _TaskListViewState();
-// }
-
-// class _TaskListViewState extends State<TaskListView> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     // Memanggil TaskFetchEvent saat widget diinisialisasi
-//     context.read<TaskBloc>().add(const TaskFetchEvent(
-//       priority: '',
-//       taskProgress: '',
-//       filterDate: '',
-//       keyword: ''
-//     ));
-//   }
-
-//   @override
-//   void didUpdateWidget(covariant TaskListView oldWidget) {
-//     super.didUpdateWidget(oldWidget);
-//     // Jika priority berubah, panggil ulang API
-//     if (oldWidget.priority != widget.priority || oldWidget.datetime != widget.datetime) {
-//       context.read<TaskBloc>().add(TaskFetchEvent(
-//         priority: '',
-//         taskProgress: widget.priority ?? '',
-//         filterDate: widget.datetime ?? '',
-//         keyword: ''
-//       ));
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Expanded(
-//         child: BlocBuilder<TaskBloc, TaskState>(
-//           builder: (context, state) {
-//             // Handle loading state
-//             if (state is TaskLoadingState) {
-//               return const Center(
-//                 child: CircularProgressIndicator(),
-//               );
-//             }
-//             // Handle error state
-//             if (state is TaskErrorState) {
-//               return Center(
-//                 child: Text(
-//                   state.message,
-//                   style: TextStyle(color: Colors.red),
-//                 ),
-//               );
-//             }
-
-//             if (state is TaskSuccessState) {
-//               final tasks = state.tasks;
-//               return ListView.builder(
-//                 itemCount: tasks.length,
-//                 itemBuilder: (context, index) {
-//                   final task = tasks[index]; 
-//                   return InkWell(
-//                     onTap: () {
-//                       context.push(RoutePath.taskDetail, extra: task.id.toString());
-//                     },
-//                     child: Card(
-//                       color: Colors.white,
-//                       elevation: 1,
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(10.0),
-//                         side: const BorderSide(color: Colors.grey, width: 1.0),
-//                       ),
-//                       child: Padding(
-//                         padding: const EdgeInsets.all(20.0),
-//                         child: Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             Row(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Expanded(
-//                                   child: Column(
-//                                     crossAxisAlignment: CrossAxisAlignment.start,
-//                                     mainAxisSize: MainAxisSize.min,
-//                                     children: [
-//                                       Text(
-//                                         task.taskName,
-//                                         style: semibold14.copyWith(fontSize: 14),
-//                                       ),
-//                                       const SizedBox(height: 8),
-//                                       Text(
-//                                         task.taskDocs ?? 'No docs available',
-//                                         style: regular14.copyWith(fontSize: 12),
-//                                         maxLines: 3,
-//                                         overflow: TextOverflow.ellipsis,
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                                 const SizedBox(width: 5),
-//                                 TextButton(
-//                                   onPressed: () {},
-//                                   style: TextButton.styleFrom(
-//                                     padding: const EdgeInsets.symmetric(vertical: 5),
-//                                     shape: RoundedRectangleBorder(
-//                                       side: const BorderSide(color: Colors.grey, width: 1),
-//                                       borderRadius: BorderRadius.circular(10),
-//                                     ),
-//                                   ),
-//                                   child: Text(
-//                                     task.priority ?? 'Low',
-//                                     style: regular12_5.copyWith(fontSize: 12, color: Colors.grey),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                             const SizedBox(height: 15),
-//                             Text(
-//                               'Progress: ${task.taskProgres}',
-//                               style: semibold12_5.copyWith(fontSize: 12),
-//                             ),
-//                             const SizedBox(height: 15),
-//                             Row(
-//                               children: [
-//                                 Row(
-//                                   children: [
-//                                     SvgPicture.asset(
-//                                       'assets/icons/ic_calendar_clock.svg',
-//                                       width: 25,
-//                                       height: 25,
-//                                     ),
-//                                     const SizedBox(width: 5),
-//                                     Text(
-//                                       task.taskDate != null
-//                                           ? DateFormat('yyyy MMM dd').format(task.taskDate)
-//                                           : 'No Date',
-//                                       style: regular14.copyWith(fontSize: 12),
-//                                     ),
-//                                   ],
-//                                 ),
-//                                 const SizedBox(width: 15),
-//                                 Row(
-//                                   children: [
-//                                     SvgPicture.asset(
-//                                       'assets/icons/ic_flags.svg',
-//                                       width: 25,
-//                                       height: 25,
-//                                     ),
-//                                     const SizedBox(width: 5),
-//                                     Text(
-//                                       task.taskDueDate != null
-//                                           ? DateFormat('yyyy MMM dd').format(task.taskDueDate)
-//                                           : 'No Due Date',
-//                                       style: regular14.copyWith(fontSize: 12),
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ],
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   );
-//                 },
-//               );
-//             }
-
-//             // Default: Jika state tidak diketahui, tampilkan pesan kosong
-//             return const Center(
-//               child: Text("No tasks available"),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:daytaskapp/app/route/routes/route_path.dart';
 import 'package:daytaskapp/feature/home/bloc/task_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
+import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart'; // Import service preference
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -208,10 +18,32 @@ class TaskListView extends StatefulWidget {
 }
 
 class _TaskListViewState extends State<TaskListView> {
+  String? roleId; // Tambahkan variabel roleId
+
   @override
   void initState() {
     super.initState();
-    // Memanggil TaskFetchEvent saat widget diinisialisasi
+    _gettingRoleId(); // Ambil role id saat init
+    _fetchTasks();
+  }
+
+  // Fungsi untuk mengambil role id secara asinkron
+  void _gettingRoleId() async {
+    final role = await getRoleId();
+    setState(() {
+      roleId = role;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant TaskListView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.priority != widget.priority || oldWidget.datetime != widget.datetime) {
+      _fetchTasks();
+    }
+  }
+
+  void _fetchTasks() {
     context.read<TaskBloc>().add(TaskFetchEvent(
       priority: '',
       taskProgress: widget.priority ?? '',
@@ -220,47 +52,63 @@ class _TaskListViewState extends State<TaskListView> {
     ));
   }
 
-  @override
-  void didUpdateWidget(covariant TaskListView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Jika priority atau datetime berubah, panggil ulang API
-    if (oldWidget.priority != widget.priority || oldWidget.datetime != widget.datetime) {
-      context.read<TaskBloc>().add(TaskFetchEvent(
-        priority: '',
-        taskProgress: widget.priority ?? '',
-        filterDate: widget.datetime ?? '',
-        keyword: '',
-      ));
+  // --- HELPER UNTUK LABEL STATUS BERWARNA ---
+  Widget _buildStatusLabel(String status) {
+    Color backgroundColor;
+    switch (status.toLowerCase()) {
+      case 'done':
+        backgroundColor = Colors.green;
+        break;
+      case 'in-progress':
+        backgroundColor = Colors.orange;
+        break;
+      case 'revision':
+        backgroundColor = Colors.redAccent;
+        break;
+      case 'asign':
+        backgroundColor = Colors.blue;
+        break;
+      default:
+        backgroundColor = Colors.grey;
     }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskBloc, TaskState>(
       builder: (context, state) {
-        // Handle loading state
         if (state is TaskLoadingState) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
-        // Handle error state
         if (state is TaskErrorState) {
           return Center(
-            child: Text(
-              state.message,
-              style: TextStyle(color: Colors.red),
-            ),
+            child: Text(state.message, style: const TextStyle(color: Colors.red)),
           );
         }
 
-        // Handle success state
         if (state is TaskSuccessState) {
           final tasks = state.tasks;
           return tasks.isEmpty
               ? const Center(child: Text('No tasks available'))
               : ListView.builder(
+                  padding: const EdgeInsets.only(top: 10, bottom: 20),
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {
                     final task = tasks[index];
@@ -271,9 +119,10 @@ class _TaskListViewState extends State<TaskListView> {
                       child: Card(
                         color: Colors.white,
                         elevation: 1,
+                        margin: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                          side: const BorderSide(color: Colors.grey, width: 1.0),
+                          side: BorderSide(color: Colors.grey.shade300, width: 1.0),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
@@ -292,74 +141,58 @@ class _TaskListViewState extends State<TaskListView> {
                                           task.taskName,
                                           style: semibold14.copyWith(fontSize: 14),
                                         ),
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 6),
+                                        // Deskripsi singkat
                                         Text(
-                                          task.taskDocs ?? 'No docs available',
-                                          style: regular14.copyWith(fontSize: 12),
-                                          maxLines: 3,
+                                          task.taskDocs.isNotEmpty 
+                                              ? task.taskDocs.split('|').first.trim() 
+                                              : 'No docs available',
+                                          style: regular14.copyWith(fontSize: 12, color: Colors.black54),
+                                          maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        
+                                        // --- TUGAS UNTUK (Hanya tampil jika Admin/Role 1) ---
+                                        if (roleId == '1') ...[
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            "Tugas Untuk: ${task.username}",
+                                            style: regular14.copyWith(
+                                              fontSize: 12, 
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600
+                                            ),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ),
                                   const SizedBox(width: 5),
-                                  TextButton(
-                                    onPressed: () {},
-                                    style: TextButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 5),
-                                      shape: RoundedRectangleBorder(
-                                        side: const BorderSide(color: Colors.grey, width: 1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
+                                  // Priority Badge
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
                                       task.priority ?? 'Low',
-                                      style: regular12_5.copyWith(fontSize: 12, color: Colors.grey),
+                                      style: regular12_5.copyWith(fontSize: 11, color: Colors.grey),
                                     ),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 15),
-                              Text(
-                                'Progress: ${task.taskProgres}',
-                                style: semibold12_5.copyWith(fontSize: 12),
-                              ),
+                              
+                              // --- STATUS LABEL BERWARNA ---
+                              _buildStatusLabel(task.taskProgres),
+                              
                               const SizedBox(height: 15),
                               Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/ic_calendar_clock.svg',
-                                        width: 25,
-                                        height: 25,
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        task.taskDate != null
-                                            ? DateFormat('yyyy MMM dd').format(task.taskDate)
-                                            : 'No Date',
-                                        style: regular14.copyWith(fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
+                                  _buildDateRow('assets/icons/ic_calendar_clock.svg', task.taskDate),
                                   const SizedBox(width: 15),
-                                  Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/ic_flags.svg',
-                                        width: 25,
-                                        height: 25,
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        task.taskDueDate != null
-                                            ? DateFormat('yyyy MMM dd').format(task.taskDueDate)
-                                            : 'No Due Date',
-                                        style: regular14.copyWith(fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
+                                  _buildDateRow('assets/icons/ic_flags.svg', task.taskDueDate),
                                 ],
                               ),
                             ],
@@ -371,12 +204,21 @@ class _TaskListViewState extends State<TaskListView> {
                 );
         }
 
-        // Default case: No tasks available
-        return const Center(
-          child: Text("No tasks available"),
-        );
+        return const Center(child: Text("No tasks available"));
       },
     );
   }
-}
 
+  Widget _buildDateRow(String iconPath, dynamic date) {
+    return Row(
+      children: [
+        SvgPicture.asset(iconPath, width: 22, height: 22),
+        const SizedBox(width: 5),
+        Text(
+          date != null ? DateFormat('yyyy MMM dd').format(date) : 'N/A',
+          style: regular14.copyWith(fontSize: 12, color: Colors.black87),
+        ),
+      ],
+    );
+  }
+}

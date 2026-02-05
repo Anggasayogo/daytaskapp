@@ -1,3 +1,4 @@
+import 'package:daytaskapp/app/config/server_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:daytaskapp/feature/rank/bloc/rank_bloc.dart';
@@ -47,8 +48,8 @@ class _RankListViewState extends State<RankListView> {
         CircleAvatar(
           radius: 22,
           backgroundImage: NetworkImage(
-          "https://api.taksmanagement.my.id/${avatar}" ??
-              "https://api.taksmanagement.my.id/assets/9815472.png",
+          "${ServerConfig.mainBaseUrl}/${avatar}" ??
+              "${ServerConfig.mainBaseUrl}/assets/9815472.png",
         ),
         ),
         CircleAvatar(

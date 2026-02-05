@@ -1,3 +1,4 @@
+import 'package:daytaskapp/app/config/server_config.dart';
 import 'package:daytaskapp/feature/taskdetail/bloc/task_detail_bloc.dart';
 import 'package:daytaskapp/feature/taskdetail/bloc/update_task_bloc.dart';
 import 'package:daytaskapp/theme/theme.dart';
@@ -5,6 +6,7 @@ import 'package:daytaskapp/utils/preferences/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
 class TaskDetailScreen extends StatefulWidget {
@@ -53,10 +55,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             return const Center(child: CircularProgressIndicator());
           } else if (state is TaskDetailSuccessState) {
             final taskDetail = state.taskDetail;
-            final isProgesDone = state.taskDetail.taskProgres == 'done' && roleId == '2';
+            final isProgesDone =
+                state.taskDetail.taskProgres == 'done' && roleId == '2';
             final superadmin = roleId == '1';
             final employe = roleId == '2';
-            
+
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
@@ -78,37 +81,134 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      // Task Docs
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Teks yang ingin dicopy
-                          Expanded(
-                            child: Text(
-                              taskDetail.taskDocs,
+                      const SizedBox(height: 15),
+
+                      // BLOK DOKUMEN & DOWNLOAD (Sudah disesuaikan)
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Deskripsi / Link:",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
+                                ),
+                                IconButton(
+                                  constraints: const BoxConstraints(),
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(Icons.copy,
+                                      size: 18, color: Colors.blue),
+                                  onPressed: () {
+                                    // 1. Proses Copy ke Clipboard
+                                    Clipboard.setData(
+                                      ClipboardData(
+                                        text: taskDetail.taskDocs
+                                            .split('|')
+                                            .first
+                                            .trim(),
+                                      ),
+                                    );
+                                    // 2. Tampilkan SnackBar
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("Teks berhasil disalin!"),
+                                        duration: Duration(seconds: 1),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              taskDetail.taskDocs.split('|').first.trim(),
                               style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
+                                  fontSize: 14, color: Colors.black87),
+                            ),
+
+                            // Munculkan tombol download HANYA jika ada tanda '|'
+                            if (taskDetail.taskDocs.contains('|')) ...[
+                              const Divider(height: 20),
+                              InkWell(
+                                onTap: () async {
+                                  final String fileName = taskDetail.taskDocs
+                                      .split('|')
+                                      .last
+                                      .trim();
+                                  final String urlString =
+                                      "${ServerConfig.mainBaseUrl}/assets/task/$fileName";
+                                  final Uri url = Uri.parse(urlString);
+                                  try {
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(
+                                        url,
+                                        mode: LaunchMode.externalApplication,
+                                      );
+                                    } else {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  "Tidak dapat membuka browser untuk: $fileName")),
+                                        );
+                                      }
+                                    }
+                                  } catch (e) {
+                                    debugPrint("Error Launching URL: $e");
+                                  }
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.file_download_outlined,
+                                        color: Colors.blue, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Klik Untuk Mengunduh File",
+                                      style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text.rich(
+                        TextSpan(
+                          text: 'Tugas ${superadmin ? 'untuk' : 'dari'}: ',
+                          style: const TextStyle(
+                              fontSize: 15, color: Colors.black),
+                          children: [
+                            TextSpan(
+                              text: superadmin ? taskDetail.username : taskDetail.svp_name,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight:
+                                    FontWeight.bold,
+                                color: Colors.black,
                               ),
                             ),
-                          ),
-
-                          // Tombol Copy
-                          IconButton(
-                            icon: const Icon(Icons.copy, size: 20, color: Colors.grey),
-                            onPressed: () {
-                              Clipboard.setData(ClipboardData(text: taskDetail.taskDocs));
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Teks berhasil disalin!"),
-                                  duration: Duration(seconds: 1),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 20),
                       // Progress and Priority
@@ -231,50 +331,54 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       const SizedBox(height: 30),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: employe ? [
-                          Text(
-                            'Task Feedback',
-                            style: semibold12_5.copyWith(
-                              fontSize: 15,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            state.taskDetail.feedback,
-                            style: regular14.copyWith(
-                              fontSize: 14,
-                              color: Colors.black38,
-                            ),
-                          ),
-                        ] : [],
+                        children: employe
+                            ? [
+                                Text(
+                                  'Task Feedback',
+                                  style: semibold12_5.copyWith(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  state.taskDetail.feedback,
+                                  style: regular14.copyWith(
+                                    fontSize: 14,
+                                    color: Colors.black38,
+                                  ),
+                                ),
+                              ]
+                            : [],
                       ),
                       const SizedBox(height: 30),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: superadmin ? [
-                          Text(
-                            'Feedback',
-                            style: semibold12_5.copyWith(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 15),
-                          TextField(
-                            controller: _feedbackController,
-                            maxLines: 4,
-                            onChanged: (value) => (),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              hintText: 'Enter your Feedback',
-                            ),
-                            textInputAction: TextInputAction.done,
-                          ),
-                          const SizedBox(height: 30),
-                        ] : [],
+                        children: superadmin
+                            ? [
+                                Text(
+                                  'Feedback',
+                                  style: semibold12_5.copyWith(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                TextField(
+                                  controller: _feedbackController,
+                                  maxLines: 4,
+                                  onChanged: (value) => (),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    hintText: 'Enter your Feedback',
+                                  ),
+                                  textInputAction: TextInputAction.done,
+                                ),
+                                const SizedBox(height: 30),
+                              ]
+                            : [],
                       ),
                       // Save Button
                       SizedBox(
